@@ -1,0 +1,26 @@
+{
+  "name": "m3tering-arweave-gateway-interface",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "compile": "tsc",
+    "start": "npm run compile && node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@apollo/server": "^4.12.0",
+    "dotenv": "^16.4.7",
+    "graphql": "^16.10.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.5",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-resolvers": "^4.5.0",
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
+  }
+}

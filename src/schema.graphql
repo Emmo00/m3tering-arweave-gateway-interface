@@ -1,0 +1,39 @@
+type Meter {
+  meterNumber: ID!
+  contractId: String
+  publicKey: String
+}
+
+type MeterDataPoint {
+  transactionId: ID!
+  contractId: String
+  meterNumber: String
+  timestamp: Int
+  nonce: Int
+  voltage: Float
+  current: Float
+  energy: Float
+  signature: String
+  publicKey: String
+}
+
+type MeterDataPointEdge {
+  cursor: String
+  node: MeterDataPoint
+}
+
+type MeterDataPointConnection {
+  edges: [MeterDataPointEdge!]!
+}
+
+type Query {
+  meters: [Meter!]!
+  meter(meterNumber: String, contractId: String): Meter
+
+  meterDataPoints(
+    meterNumber: String
+    contractId: String
+    first: Int
+    after: String
+  ): [MeterDataPointConnection!]!
+}
