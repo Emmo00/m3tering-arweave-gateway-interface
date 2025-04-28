@@ -4,17 +4,30 @@ export interface Meter {
   publicKey: string;
 }
 
-export interface MeterDataPoint {
-  transactionId: string;
-  contractId: string;
-  meterNumber: string;
+export interface MeterDataPointPayload {
   nonce: number;
   voltage: number;
   current: number;
   energy: number;
   signature: string;
   publicKey: string;
+}
+
+export interface MeterDataPoint {
+  transactionId: string;
+  contractId: string;
+  meterNumber: string;
   timestamp: number;
+  payload: MeterDataPointPayload;
+}
+
+export interface MeterDataPointEdge {
+  cursor: string;
+  node: MeterDataPoint;
+}
+
+export interface MeterDataPointConnection {
+  edges: MeterDataPointEdge[];
 }
 
 export interface MeterResolverArgs {
@@ -27,12 +40,14 @@ export interface MeterDataPointsResolverArgs {
   contractId?: string;
   first?: number;
   after?: string;
+  sortBy?: string;
 }
 
 export interface BuildArweaveTransactionQueryConfig {
   contractId: string;
   after?: string;
   first?: number;
+  sortBy?: string;
 }
 
 export interface ArweaveResponseBody {

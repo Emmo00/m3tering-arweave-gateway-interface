@@ -1,20 +1,20 @@
-import { ARWEAVE_GATEWAY_URL } from "./constants";
+import { ARWEAVE_GATEWAY_URL } from "../constants";
+import { warp } from "../config/warp";
 import {
-  ArweaveResponseBody,
   BuildArweaveTransactionQueryConfig,
-  MeterDataPoint,
   MeterTransactionData,
-} from "./types";
+} from "../types";
 
 export function buildArweaveTransactionQuery({
   contractId,
   first,
   after,
+  sortBy,
 }: BuildArweaveTransactionQueryConfig): string {
   return `{
         transactions(
             first: ${first || 10}
-            sort: HEIGHT_DESC
+            sort: ${sortBy || "HEIGHT_DESC"}
             after: "${after || ""}"
             tags: [
                 { name: "Contract-Use", values: ["M3tering Protocol"] },
@@ -38,6 +38,10 @@ export function buildArweaveTransactionQuery({
                     block {
                         timestamp
                     }
+                    tags {
+                        name
+                        value
+                    }
                 }
             }
         }
@@ -46,7 +50,7 @@ export function buildArweaveTransactionQuery({
 
 export async function makeRequestToArweave<T>(query: string): Promise<T> {
   try {
-    const response = await fetch(ARWEAVE_GATEWAY_URL, {
+    const response = await fetch(`${ARWEAVE_GATEWAY_URL}/graphql`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,19 +69,17 @@ export async function makeRequestToArweave<T>(query: string): Promise<T> {
     throw error;
   }
 }
+
 export async function loadTransactionData<functionName>(
   transactionId: string
 ): Promise<MeterTransactionData<functionName>> {
   try {
-    const response = await fetch(
-      `${ARWEAVE_GATEWAY_URL}/tx/${transactionId}/data`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch(`${ARWEAVE_GATEWAY_URL}/${transactionId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -91,26 +93,17 @@ export async function loadTransactionData<functionName>(
   }
 }
 
-export function buildMeterDataPoint(
-    transactionData: {
-        transactionId: string;
-        response: MeterTransactionData<"meter">;
-    }[],
-    transactionIDToEdgeDataMap: { [key: string]: ArweaveResponseBody }
-): MeterDataPoint[] {
-    return transactionData.map(({ transactionId, response }) => {
-        const edgeData = transactionIDToEdgeDataMap[transactionId];
+export async function getMeterFromMeterNumber(meterNumber: string) {
+  // TODO: implement this function
+  // This function should resolve the contractId from the meterNumber
+  // and return the contractId and the initial state of the meter
+}
 
-        if (!edgeData) {
-            console.warn(`No edge data found for transaction ID: ${transactionId}`);
-            return null;
-        }
+export async function getMeterFromContractId(contractId: string) {
+  const meterState = (await warp.contract(contractId).readState(1650336)).cachedValue
+    .state;
 
-        return {
-            transactionId,
-            timestamp: edgeData.block.timestamp,
-            meterValue: response.meterValue,
-            metadata: response.metadata,
-        };
-    }).filter((dataPoint): dataPoint is MeterDataPoint => dataPoint !== null);
+  console.log("Meter state:", meterState);
+
+  return meterState;
 }

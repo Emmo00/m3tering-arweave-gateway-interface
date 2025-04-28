@@ -4,11 +4,7 @@ type Meter {
   publicKey: String
 }
 
-type MeterDataPoint {
-  transactionId: ID!
-  contractId: String
-  meterNumber: String
-  timestamp: Int
+type MeterDataPointPayload {
   nonce: Int
   voltage: Float
   current: Float
@@ -17,13 +13,22 @@ type MeterDataPoint {
   publicKey: String
 }
 
+type MeterDataPoint {
+  transactionId: ID!
+  contractId: String
+  meterNumber: String
+  timestamp: Int
+  payload: MeterDataPointPayload
+}
+
 type MeterDataPointEdge {
   cursor: String
   node: MeterDataPoint
 }
 
-type MeterDataPointConnection {
-  edges: [MeterDataPointEdge!]!
+enum MeterDataPointOrderBy {
+  HEIGHT_ASC
+  HEIGHT_DESC
 }
 
 type Query {
@@ -35,5 +40,6 @@ type Query {
     contractId: String
     first: Int
     after: String
-  ): [MeterDataPointConnection!]!
+    sortBy: MeterDataPointOrderBy
+  ): [MeterDataPointEdge!]!
 }

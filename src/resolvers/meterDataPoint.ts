@@ -1,28 +1,30 @@
 import {
   ArweaveResponseBody,
-  MeterDataPoint,
+  MeterDataPointEdge,
   MeterDataPointsResolverArgs,
 } from "../types";
 import {
   buildArweaveTransactionQuery,
-  buildMeterDataPoint,
   loadTransactionData,
   makeRequestToArweave,
-} from "../utils";
+} from "../utils/arweave";
+import { buildMeterDataPoint } from "../utils/helpers";
 
 export async function meterDataPointResolver(
   _: any,
   args: MeterDataPointsResolverArgs
-): Promise<MeterDataPoint[]> {
-  const { meterNumber, contractId, first, after } = args;
-  let meterDataPoints: MeterDataPoint[] = [];
+): Promise<MeterDataPointEdge[]> {
+  const { meterNumber, contractId, first, after, sortBy } = args;
+  let meterDataPoints: MeterDataPointEdge[] = [];
 
-  // if meterNumber was passed instead of contractId, resolve contractId
+  // TODO: if meterNumber was passed instead of contractId, resolve contractId
+
   // build arweave query
   const arweaveQuery = buildArweaveTransactionQuery({
     contractId,
     first,
     after,
+    sortBy,
   });
 
   // get meter data points transactions
@@ -35,11 +37,16 @@ export async function meterDataPointResolver(
     arweaveResponse.data.transactions.edges.reduce((acc: any, edge: any) => {
       const transactionId = edge.node.id;
       const blockTimestamp = edge.node.block.timestamp;
+      const tags = edge.node.tags.reduce((acc: any, tag: any) => {
+        acc[tag.name] = tag.value;
+        return acc;
+      }, {});
       const cursor = edge.cursor;
       acc[transactionId] = {
         id: transactionId,
         blockTimestamp,
         cursor,
+        tags,
       };
       return acc;
     }, {});

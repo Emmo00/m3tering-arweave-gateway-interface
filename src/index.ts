@@ -1,22 +1,11 @@
+import "dotenv/config";
 import fs from "fs";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import "dotenv/config";
-import { meterResolver, metersResolver } from "./resolvers/meters";
-import { meterDataPointResolver } from "./resolvers/meterDataPoint";
+import { resolvers } from "./resolvers/index";
 
 // load graphql schema from file
 const typeDefs = fs.readFileSync("./schema.graphql", "utf-8");
-
-// configure resolvers
-const resolvers = {
-  Query: {
-    meters: metersResolver,
-    meter: meterResolver,
-
-    meterDataPoints: meterDataPointResolver,
-  },
-};
 
 // The ApolloServer constructor
 const server = new ApolloServer({
@@ -25,8 +14,15 @@ const server = new ApolloServer({
 });
 
 // start Apollo server
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 },
-});
-
-console.log(`🚀  Server ready at: ${url}`);
+startStandaloneServer(server, {
+  listen: { port: 4001 },
+})
+  .then(({ url }) => {
+    // eslint-disable-next-line no-console
+    console.log(`🚀  Server ready at: ${url}`);
+  })
+  .catch((error) => {
+    // eslint-disable-next-line no-console
+    console.error("Error starting server:", error);
+    process.exit(1);
+  });
