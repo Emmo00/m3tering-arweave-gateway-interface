@@ -1,23 +1,36 @@
 import {
-  ArweaveResponseBody,
+  ArweaveTransactionsResponseBody,
   MeterDataPointEdge,
   MeterDataPointsResolverArgs,
+  MeterTransactionData,
 } from "../types";
 import {
   buildArweaveTransactionQuery,
   loadTransactionData,
   makeRequestToArweave,
 } from "../utils/arweave";
-import { buildMeterDataPoint } from "../utils/helpers";
+import {
+  buildMeterDataPoint,
+  transformOldWarpSchemaToNewSchema,
+} from "../utils/helpers";
+import { getMeterFromMeterNumber } from "../utils/mongo";
 
 export async function meterDataPointResolver(
   _: any,
   args: MeterDataPointsResolverArgs
 ): Promise<MeterDataPointEdge[]> {
-  const { meterNumber, contractId, first, after, sortBy } = args;
+  const { meterNumber, first, after, sortBy } = args;
+  let { contractId } = args;
   let meterDataPoints: MeterDataPointEdge[] = [];
 
-  // TODO: if meterNumber was passed instead of contractId, resolve contractId
+  // meterNumber was passed instead of contractId, resolve contractId
+  if (!contractId && meterNumber) {
+    const meter = await getMeterFromMeterNumber(meterNumber);
+    if (!meter) {
+      throw new Error(`No meter found with meterNumber: ${meterNumber}`);
+    }
+    contractId = meter.contractId;
+  }
 
   // build arweave query
   const arweaveQuery = buildArweaveTransactionQuery({
@@ -28,9 +41,8 @@ export async function meterDataPointResolver(
   });
 
   // get meter data points transactions
-  const arweaveResponse = await makeRequestToArweave<ArweaveResponseBody>(
-    arweaveQuery
-  );
+  const arweaveResponse =
+    await makeRequestToArweave<ArweaveTransactionsResponseBody>(arweaveQuery);
 
   // transaction id => edge data mapping
   const transactionIDToEdgeDataMap =
@@ -57,7 +69,24 @@ export async function meterDataPointResolver(
   // get transaction data for each transaction ID
   const transactionData = await Promise.all(
     transactionIds.map(async (transactionId) => {
-      const response = await loadTransactionData<"meter">(transactionId);
+      let response = await loadTransactionData<"meter">(transactionId);
+
+      if (typeof response !== "object") {
+        // load and transform transaction data from tags `Input`
+        const edgeData = transactionIDToEdgeDataMap[transactionId];
+        const inputTag = edgeData.tags["Input"];
+        if (!inputTag) {
+          console.warn(
+            `No input tag found for transaction ID: ${transactionId}`
+          );
+          return null;
+        }
+
+        // transform and parse the input tag
+        response = transformOldWarpSchemaToNewSchema(
+          inputTag
+        ) as MeterTransactionData<"meter">;
+      }
 
       return { response, transactionId };
     })
@@ -68,6 +97,8 @@ export async function meterDataPointResolver(
     transactionData,
     transactionIDToEdgeDataMap
   );
+
+  console.log("meterDataPoints", meterDataPoints);
 
   return meterDataPoints;
 }

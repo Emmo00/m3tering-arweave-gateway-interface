@@ -1,7 +1,4 @@
-import {
-  MeterDataPointEdge,
-  MeterTransactionData,
-} from "../types";
+import { MeterDataPointEdge, MeterTransactionData } from "../types";
 
 export function buildMeterDataPoint(
   transactionData: {
@@ -23,6 +20,28 @@ export function buildMeterDataPoint(
 
       if (!edgeData) {
         console.warn(`No edge data found for transaction ID: ${transactionId}`);
+        return null;
+      }
+
+      if (typeof response !== "object") {
+        console.warn(
+          `Invalid response for transaction ID: ${transactionId}, expected object but got ${typeof response}`
+        );
+        return null;
+      }
+      if (!response.input || !response.input.payload) {
+        console.warn(
+          `Invalid response structure for transaction ID: ${transactionId}`
+        );
+        return null;
+      }
+
+      console.log("response build", response);
+
+      if (response.input.payload.length !== 3) {
+        console.warn(
+          `Invalid payload length for transaction ID: ${transactionId}, expected 3 but got ${response.input.payload.length}`
+        );
         return null;
       }
 
@@ -51,4 +70,36 @@ export function buildMeterDataPoint(
       } as unknown as MeterDataPointEdge;
     })
     .filter((dataPoint) => dataPoint !== null);
+}
+
+export function transformOldWarpSchemaToNewSchema(transactionData: string) {
+  /* 
+    OLD:
+    {\"data\":[\"signature\",\"publicKey\",[nonce,voltage,current]],\"function\":\"meter\"}
+  */
+  /* 
+    NEW:
+    {
+      input: {
+        payload: ["[nonce,voltage,current, energy]", "signature", "publicKey"],
+        function: \"meter\"
+      }
+    }
+  */
+  const parsedData = JSON.parse(transactionData);
+  const { data, function: func } = parsedData;
+  const [signature, publicKey, payload] = data;
+  const [nonce, voltage, current, energy = 0] = payload;
+  const newSchema = {
+    input: {
+      payload: [
+        JSON.stringify([nonce, voltage, current, energy]),
+        signature,
+        publicKey,
+      ],
+      function: func,
+    },
+  };
+  console.log("newSchema", newSchema);
+  return newSchema;
 }

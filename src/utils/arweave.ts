@@ -48,6 +48,51 @@ export function buildArweaveTransactionQuery({
     }`;
 }
 
+export function buildArweaveQueryForContractId({
+  exclude,
+  after = null,
+}: {
+  exclude: string[];
+  after?: string | null;
+}) {
+  return `{
+        transactions(
+            first: 1
+            sort: HEIGHT_DESC
+            tags: [
+                { name: "Contract-Use", values: ["M3tering Protocol"] },
+                { name: "Bundle-Format", values: ["binary", "json"], op: NEQ }
+            ${
+              exclude.length > 0
+                ? `
+                {
+                  name: "Contract"
+                  values: ["${exclude.join('", "')}", ]
+                  op: NEQ
+                }
+                  `
+                : ""
+            }
+                ]
+            after: "${after || ""}"
+        ) {
+            edges {
+                cursor
+                node {
+                    id
+                    block {
+                        timestamp
+                    }
+                    tags {
+                        name
+                        value
+                    }
+                }
+            }
+        }
+    }`;
+}
+
 export async function makeRequestToArweave<T>(query: string): Promise<T> {
   try {
     const response = await fetch(`${ARWEAVE_GATEWAY_URL}/graphql`, {
@@ -70,9 +115,9 @@ export async function makeRequestToArweave<T>(query: string): Promise<T> {
   }
 }
 
-export async function loadTransactionData<functionName>(
-  transactionId: string
-): Promise<MeterTransactionData<functionName>> {
+export async function loadTransactionData<
+  functionName extends "meter" | "initial"
+>(transactionId: string): Promise<MeterTransactionData<functionName>> {
   try {
     const response = await fetch(`${ARWEAVE_GATEWAY_URL}/${transactionId}`, {
       method: "GET",
@@ -93,14 +138,8 @@ export async function loadTransactionData<functionName>(
   }
 }
 
-export async function getMeterFromMeterNumber(meterNumber: string) {
-  // TODO: implement this function
-  // This function should resolve the contractId from the meterNumber
-  // and return the contractId and the initial state of the meter
-}
-
-export async function getMeterFromContractId(contractId: string) {
-  const meterState = (await warp.contract(contractId).readState(1650336)).cachedValue
+export async function getMeterCurrentState(contractId: string) {
+  const meterState = (await warp.contract(contractId).readState()).cachedValue
     .state;
 
   console.log("Meter state:", meterState);

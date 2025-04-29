@@ -1,21 +1,28 @@
 import { Meter, MeterResolverArgs } from "../types";
 import {
+  getAllMeters,
   getMeterFromContractId,
   getMeterFromMeterNumber,
-} from "../utils/arweave";
+} from "../utils/mongo";
 
-export function metersResolver(): Meter[] {
-  return [];
+export async function metersResolver(): Promise<Meter[]> {
+  // get meters from database
+  return (await getAllMeters()).sort(
+    (a, b) => parseInt(b.meterNumber) - parseInt(a.meterNumber)
+  );
 }
 
-export function meterResolver(_: any, args: MeterResolverArgs): Meter | null {
+export async function meterResolver(
+  _: any,
+  args: MeterResolverArgs
+): Promise<Meter | null> {
   const { meterNumber, contractId } = args;
-  let meter = null;
+  let meter: Meter | null = null;
 
-  if (meterNumber) {
-    meter = getMeterFromMeterNumber(meterNumber);
-  } else if (contractId) {
-    meter = getMeterFromContractId(contractId);
+  if (contractId) {
+    meter = await getMeterFromContractId(contractId);
+  } else if (meterNumber) {
+    meter = await getMeterFromMeterNumber(meterNumber);
   } else {
     throw new Error("Either meterNumber or contractId must be provided");
   }

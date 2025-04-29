@@ -1,28 +1,15 @@
 import "dotenv/config";
-import fs from "fs";
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
-import { resolvers } from "./resolvers/index";
+import { testConnectionToArweaveGateway } from "./config/arweave";
+import { connectDB } from "./config/mongo";
+import { startServer } from "./config/server";
+import { fetchAndStoreMeters } from "./jobs/meters";
 
-// load graphql schema from file
-const typeDefs = fs.readFileSync("./schema.graphql", "utf-8");
-
-// The ApolloServer constructor
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-});
-
-// start Apollo server
-startStandaloneServer(server, {
-  listen: { port: 4001 },
-})
-  .then(({ url }) => {
-    // eslint-disable-next-line no-console
-    console.log(`🚀  Server ready at: ${url}`);
-  })
-  .catch((error) => {
-    // eslint-disable-next-line no-console
-    console.error("Error starting server:", error);
-    process.exit(1);
+// start server
+testConnectionToArweaveGateway().then(() => {
+  connectDB().then(() => {
+    fetchAndStoreMeters();
+    startServer().then(() => {
+      console.log("Server started successfully");
+    });
   });
+});

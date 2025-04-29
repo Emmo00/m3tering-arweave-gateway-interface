@@ -1,7 +1,17 @@
 export interface Meter {
   contractId: string;
   meterNumber: string;
-  publicKey: string;
+  state: {
+    app_eui: string;
+    app_key: string;
+    dev_eui: string;
+    is_on: boolean;
+    kwh_balance: number;
+    last_block: number;
+    nonce: number;
+    public_key: string;
+    token_id: number;
+  };
 }
 
 export interface MeterDataPointPayload {
@@ -50,7 +60,7 @@ export interface BuildArweaveTransactionQueryConfig {
   sortBy?: string;
 }
 
-export interface ArweaveResponseBody {
+export interface ArweaveTransactionsResponseBody {
   data: {
     transactions: {
       edges: {
@@ -60,15 +70,26 @@ export interface ArweaveResponseBody {
           block: {
             timestamp: number;
           };
+          tags?: {
+            name: string;
+            value: string;
+          }[];
         };
       }[];
     };
   };
 }
 
-export interface MeterTransactionData<functionName> {
-  input: {
-    payload: [`[${string}]`, string, string];
-    function: functionName;
-  };
-}
+export type MeterTransactionData<FunctionName extends "meter" | "initial"> =
+  FunctionName extends "meter"
+    ? {
+        input: {
+          payload: [string, string, string];
+          function: FunctionName;
+        };
+      }
+    : FunctionName extends "initial"
+    ? {
+        token_id: number;
+      }
+    : never;

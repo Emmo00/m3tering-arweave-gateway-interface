@@ -1,7 +1,20 @@
 type Meter {
-  meterNumber: ID!
+  meterNumber: String!
   contractId: String
   publicKey: String
+  state: MeterState
+}
+
+type MeterState {
+  app_eui: String
+  app_key: String
+  dev_eui: String
+  is_on: Boolean
+  kwh_balance: Float
+  last_block: Int
+  nonce: Int
+  public_key: String
+  token_id: String
 }
 
 type MeterDataPointPayload {
