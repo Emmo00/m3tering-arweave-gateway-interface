@@ -14,7 +14,7 @@ const server = new ApolloServer({
 
 export const startServer = async () => {
   startStandaloneServer(server, {
-    listen: { port: 4001 },
+    listen: { port: 4001, host: "0.0.0.0" },
   })
     .then(({ url }) => {
       // eslint-disable-next-line no-console
