@@ -5,11 +5,12 @@ import { startServer } from "./config/server";
 import { fetchAndStoreMeters } from "./jobs/meters";
 
 // start server
+startServer();
 testConnectionToArweaveGateway().then(() => {
   connectDB().then(() => {
     fetchAndStoreMeters();
-    startServer().then(() => {
-      console.log("Server started successfully");
-    });
+    // startServer().then(() => {
+    //   console.log("Server started successfully");
+    // });
   });
 });
