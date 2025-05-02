@@ -4,6 +4,7 @@ import { connectDB } from "./config/mongo";
 import { startServer } from "./config/server";
 import { fetchAndStoreMeters } from "./jobs/meters";
 
+console.log("Starting application...");
 // start server
 startServer();
 testConnectionToArweaveGateway().then(() => {
