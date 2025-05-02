@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "start": "npm run compile && node ./dist/index.js",
+    "start": "npm run compile && node --max-old-space-size=4096 ./dist/index.js",
     "dev": "nodemon"
   },
   "keywords": [],
