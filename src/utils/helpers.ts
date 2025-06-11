@@ -1,6 +1,8 @@
 import { MeterDataPointEdge, MeterTransactionData } from "../types";
 
 export function buildMeterDataPoint(
+  meterNumber_: string,
+  contractId_: string,
   transactionData: {
     transactionId: string;
     response: MeterTransactionData<"meter">;
@@ -12,7 +14,8 @@ export function buildMeterDataPoint(
       blockTimestamp: number;
       tags: any;
     };
-  }
+  },
+
 ): MeterDataPointEdge[] {
   return transactionData
     .map(({ transactionId, response }) => {
@@ -49,13 +52,13 @@ export function buildMeterDataPoint(
         response.input.payload[0]
       );
 
-      const contractId = edgeData.tags["Contract"] || null;
+      const contractId = edgeData.tags["Contract"] || contractId_ || null;
 
       return {
         cursor: edgeData.cursor,
         node: {
           transactionId,
-          meterNumber: null,
+          meterNumber: meterNumber_,
           contractId,
           timestamp: edgeData.blockTimestamp,
           payload: {

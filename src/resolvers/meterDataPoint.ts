@@ -13,14 +13,17 @@ import {
   buildMeterDataPoint,
   transformOldWarpSchemaToNewSchema,
 } from "../utils/helpers";
-import { getMeterFromMeterNumber } from "../utils/mongo";
+import {
+  getMeterFromContractId,
+  getMeterFromMeterNumber,
+} from "../utils/mongo";
 
 export async function meterDataPointResolver(
   _: any,
   args: MeterDataPointsResolverArgs
 ): Promise<MeterDataPointEdge[]> {
-  const { meterNumber, first, after, sortBy } = args;
-  let { contractId } = args;
+  const { first, after, sortBy } = args;
+  let { contractId, meterNumber } = args;
   let meterDataPoints: MeterDataPointEdge[] = [];
 
   // meterNumber was passed instead of contractId, resolve contractId
@@ -29,7 +32,16 @@ export async function meterDataPointResolver(
     if (!meter) {
       throw new Error(`No meter found with meterNumber: ${meterNumber}`);
     }
+
     contractId = meter.contractId;
+  } else {
+    const meter = await getMeterFromContractId(contractId);
+
+    if (!meter) {
+      throw new Error(`No meter found with contract ID: ${contractId}`);
+    }
+
+    meterNumber = meter.meterNumber;
   }
 
   // build arweave query
@@ -94,11 +106,11 @@ export async function meterDataPointResolver(
 
   // build meter data point from transaction data and edge data
   meterDataPoints = buildMeterDataPoint(
+    meterNumber,
+    contractId,
     transactionData,
     transactionIDToEdgeDataMap
   );
-
-  console.log("meterDataPoints", meterDataPoints);
 
   return meterDataPoints;
 }
