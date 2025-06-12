@@ -1,4 +1,4 @@
-import { MeterModel } from "../constants";
+import { MeterModel } from "../models/Meter";
 import { ArweaveTransactionsResponseBody } from "../types";
 import {
   buildArweaveQueryForContractId,
@@ -6,6 +6,7 @@ import {
   loadTransactionData,
   makeRequestToArweave,
 } from "../utils/arweave";
+import { readTokenByContract } from "../utils/blockchain";
 
 export async function fetchAndStoreMeters() {
   let afterCursor: string | null = null;
@@ -38,9 +39,21 @@ export async function fetchAndStoreMeters() {
     const contractId = tags["Contract"];
 
     if (!contractId) {
+      // if no contract ID found in the transaction tags
       afterCursor = transactionEdges[0].cursor;
       console.error(
         `No contract ID found in transaction[${transaction.id}] tags`
+      );
+      continue;
+    }
+
+    // check if contract ID is on the blockchain
+    if (
+      (await readTokenByContract(contractId)).toString() === "0" // if contract ID is not on the blockchain
+    ) {
+      afterCursor = transactionEdges[0].cursor;
+      console.error(
+        `Contract ID ${contractId} not found on the blockchain, skipping`
       );
       continue;
     }

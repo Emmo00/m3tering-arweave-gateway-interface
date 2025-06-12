@@ -1,4 +1,4 @@
-import { MeterModel } from "../constants";
+import { MeterModel } from "../models/Meter";
 import { Meter } from "../types";
 
 export async function getMeterFromMeterNumber(
