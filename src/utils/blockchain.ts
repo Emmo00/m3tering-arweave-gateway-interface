@@ -10,10 +10,10 @@ const protocolContract = new ethers.Contract(
   provider
 );
 
-export async function readContractByToken(tokenAddress: number): Promise<string> {
+export async function readContractByToken(tokenId: string): Promise<string> {
   try {
-    const result = await protocolContract.contractByToken(tokenAddress);
-    console.log(`Contract for token ${tokenAddress}:`, result);
+    const result = await protocolContract.contractByToken(tokenId);
+    console.log(`Contract for token ${tokenId}:`, result);
     return result;
   } catch (error) {
     console.error("Error reading contract:", error);

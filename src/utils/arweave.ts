@@ -58,7 +58,7 @@ export function buildArweaveQueryForContractId({
   return `{
         transactions(
             first: 1
-            sort: HEIGHT_DESC
+            sort: HEIGHT_ASC
             tags: [
                 { name: "Contract-Use", values: ["M3tering Protocol"] },
                 { name: "Bundle-Format", values: ["binary", "json"], op: NEQ }

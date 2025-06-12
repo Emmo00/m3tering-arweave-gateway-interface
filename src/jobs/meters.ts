@@ -6,10 +6,11 @@ import {
   loadTransactionData,
   makeRequestToArweave,
 } from "../utils/arweave";
-import { readTokenByContract } from "../utils/blockchain";
+import { readTokenByContract, readContractByToken } from "../utils/blockchain";
 
 export async function fetchAndStoreMeters() {
-  let afterCursor: string | null = null;
+  let afterCursor: string | null = "";
+  let dublicateContractIds: string[] = [];
 
   // while there are more contractIDs to handle
   while (true) {
@@ -19,7 +20,7 @@ export async function fetchAndStoreMeters() {
     ).map((meter) => meter.contractId);
     // fetch one transaction from arweave that doesnt have already stored contractID
     const query = buildArweaveQueryForContractId({
-      exclude: storedContractIds,
+      exclude: [...storedContractIds, ...dublicateContractIds],
       after: afterCursor,
     });
 
@@ -48,10 +49,15 @@ export async function fetchAndStoreMeters() {
     }
 
     // check if contract ID is on the blockchain
+    let tokenForContract = (await readTokenByContract(contractId)).toString();
+    let contractIdForToken = await readContractByToken(tokenForContract);
+
     if (
-      (await readTokenByContract(contractId)).toString() === "0" // if contract ID is not on the blockchain
+      tokenForContract === "0" || // if token is not found
+      contractIdForToken !== contractId // or if contract ID does not match the one from the transaction
     ) {
       afterCursor = transactionEdges[0].cursor;
+      dublicateContractIds.push(contractId);
       console.error(
         `Contract ID ${contractId} not found on the blockchain, skipping`
       );
