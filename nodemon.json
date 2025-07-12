@@ -1,7 +1,7 @@
 {
   "watch": ["src", "./schema.graphql"],
   "ext": "ts",
-  "ignore": ["src/**/*.spec.ts"],
+  "ignore": ["src/**/*.spec.ts", "src/**/*.test.ts", "node_modules"],
   "exec": "ts-node ./src/index.ts",
   "delay": "100"
 }
