@@ -1,16 +1,46 @@
-import { ARWEAVE_GATEWAY_URL } from "../constants";
+import { ARWEAVE_GATEWAY_URL, ARWEAVE_PEERS } from "../constants"
 
-export const testConnectionToArweaveGateway = async () => {
-  try {
-    const response = await fetch(ARWEAVE_GATEWAY_URL);
+class ArweaveConfig {
+  private gatewayUrl: string
 
-    if (!response.ok) {
-      throw new Error("Failed to connect to Arweave");
+  constructor() {
+    this.gatewayUrl = ARWEAVE_GATEWAY_URL
+      ? ARWEAVE_GATEWAY_URL
+      : ARWEAVE_PEERS[0]
+
+    if (!this.gatewayUrl) {
+      throw new Error("No Arweave gateway URL provided")
+    }
+  }
+
+  public getGatewayUrl(): string {
+    return this.gatewayUrl
+  }
+
+  public rotateGatewayUrl() {
+    // Rotate to the next gateway URL in the list
+    const currentURL = this.gatewayUrl
+    const currentIndex = ARWEAVE_PEERS.indexOf(currentURL)
+    if (currentIndex === -1 || currentIndex === ARWEAVE_PEERS.length - 1) {
+      this.gatewayUrl = ARWEAVE_PEERS[0]
+    } else {
+      this.gatewayUrl = ARWEAVE_PEERS[currentIndex + 1]
     }
 
-    const data = await response.json();
-    console.log("Connected to Arweave:", data);
-  } catch (error) {
-    console.error("Error connecting to Arweave:", error);
+    // if new url is an ip, make sure it is a full url
+    if (
+      !this.gatewayUrl.startsWith("http://") &&
+      !this.gatewayUrl.startsWith("https://")
+    ) {
+      this.gatewayUrl = `http://${this.gatewayUrl}`
+    }
+
+    if (this.gatewayUrl === currentURL && ARWEAVE_PEERS.length > 1) {
+      this.rotateGatewayUrl()
+    }
+
+    return this.gatewayUrl
   }
-};
+}
+
+export const arweaveConfig = new ArweaveConfig()

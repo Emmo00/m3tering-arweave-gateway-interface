@@ -1,17 +1,21 @@
-import "dotenv/config";
-import { testConnectionToArweaveGateway } from "./config/arweave";
-import { connectDB } from "./config/mongo";
-import { startServer } from "./config/server";
-import { fetchAndStoreMeters, updateMetersState } from "./jobs/meters";
+import "dotenv/config"
+import { testConnectionToArweaveGateway } from "./utils/arweave"
+import { connectDB } from "./config/mongo"
+import { startServer } from "./config/server"
+import { fetchAndStoreMeters, updateMetersState } from "./jobs/meters"
+import { logMemoryStatistics } from "./utils/helpers"
 
-console.log("Starting application...");
+console.log("Memory Stats:")
+console.log(process.memoryUsage())
+console.log("Starting application...")
 // start server
-startServer();
+startServer()
 testConnectionToArweaveGateway().then(() => {
   connectDB().then(() => {
+    logMemoryStatistics()
     fetchAndStoreMeters().then(() => {
-      console.log("Meters fetched and stored successfully");
+      console.log("Meters fetched and stored successfully")
       // updateMetersState();
-    });
-  });
-});
+    })
+  })
+})

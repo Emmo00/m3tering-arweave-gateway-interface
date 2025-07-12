@@ -1,9 +1,24 @@
-import { ARWEAVE_GATEWAY_URL } from "../constants";
-import { warp } from "../config/warp";
+import { warp } from "../config/warp"
 import {
   BuildArweaveTransactionQueryConfig,
   MeterTransactionData,
-} from "../types";
+} from "../types"
+import { makeRequestToArweaveNetwork } from "./helpers"
+
+export const testConnectionToArweaveGateway = async () => {
+  try {
+    const response = await makeRequestToArweaveNetwork()
+
+    if (!response.ok) {
+      throw new Error("Failed to connect to Arweave")
+    }
+
+    const data = await response.json()
+    console.log("Connected to Arweave:", data)
+  } catch (error) {
+    console.error("Error connecting to Arweave:", error)
+  }
+}
 
 export function buildArweaveTransactionQuery({
   contractId,
@@ -45,15 +60,15 @@ export function buildArweaveTransactionQuery({
                 }
             }
         }
-    }`;
+    }`
 }
 
 export function buildArweaveQueryForContractId({
   exclude,
   after = null,
 }: {
-  exclude: string[];
-  after?: string | null;
+  exclude: string[]
+  after?: string | null
 }) {
   return `{
         transactions(
@@ -90,28 +105,28 @@ export function buildArweaveQueryForContractId({
                 }
             }
         }
-    }`;
+    }`
 }
 
 export async function makeRequestToArweave<T>(query: string): Promise<T> {
   try {
-    const response = await fetch(`${ARWEAVE_GATEWAY_URL}/graphql`, {
+    const response = await makeRequestToArweaveNetwork("/graphql", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ query }),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data = await response.json();
-    return data as T;
+    const data = await response.json()
+    return data as T
   } catch (error) {
-    console.error("Error making request to Arweave:", error);
-    throw error;
+    console.error("Error making request to Arweave:", error)
+    throw error
   }
 }
 
@@ -119,30 +134,30 @@ export async function loadTransactionData<
   functionName extends "meter" | "initial"
 >(transactionId: string): Promise<MeterTransactionData<functionName>> {
   try {
-    const response = await fetch(`${ARWEAVE_GATEWAY_URL}/${transactionId}`, {
+    const response = await makeRequestToArweaveNetwork(`/${transactionId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const data = await response.json();
-    return data as MeterTransactionData<functionName>;
+    const data = await response.json()
+    return data as MeterTransactionData<functionName>
   } catch (error) {
-    console.error("Error loading transaction data from Arweave:", error);
-    throw error;
+    console.error("Error loading transaction data from Arweave:", error)
+    throw error
   }
 }
 
 export async function getMeterCurrentState(contractId: string) {
   const meterState = (await warp.contract(contractId).readState()).cachedValue
-    .state;
+    .state
 
-  console.log("Meter state:", meterState);
+  console.log("Meter state:", meterState)
 
-  return meterState;
+  return meterState
 }
