@@ -13,9 +13,9 @@ startServer()
 testConnectionToArweaveGateway().then(() => {
   connectDB().then(() => {
     logMemoryStatistics()
-    fetchAndStoreMeters().then(() => {
-      console.log("Meters fetched and stored successfully")
-      // updateMetersState();
-    })
+    // fetchAndStoreMeters().then(() => {
+    //   console.log("Meters fetched and stored successfully")
+    //   // updateMetersState();
+    // })
   })
 })
