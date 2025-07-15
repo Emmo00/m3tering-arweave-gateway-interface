@@ -208,6 +208,7 @@ export async function loadTransactionData<
 }
 
 export async function getMeterCurrentState(contractId: string) {
+  console.log("Getting state for", contractId);
   const meterState = (await warp.contract(contractId).readState()).cachedValue
     .state;
 
