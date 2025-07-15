@@ -2,7 +2,7 @@ import "dotenv/config";
 import { testConnectionToArweaveGateway } from "./utils/arweave";
 import { connectDB } from "./config/mongo";
 import { startServer } from "./config/server";
-import { fetchAndStoreMeters, updateMetersState } from "./jobs/meters";
+import { fetchAndStoreMeters, updateMetersState } from "./utils/meters";
 import { logMemoryStatistics } from "./utils/helpers";
 
 console.log("Memory Stats:");

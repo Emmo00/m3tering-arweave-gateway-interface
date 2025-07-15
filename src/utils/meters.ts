@@ -5,8 +5,8 @@ import {
   getMeterCurrentState,
   loadTransactionData,
   makeRequestToArweave,
-} from "../utils/arweave"
-import { readTokenByContract, readContractByToken } from "../utils/blockchain"
+} from "./arweave"
+import { readTokenByContract, readContractByToken } from "./blockchain"
 import { SyncDump } from "../models/SyncDump"
 
 export async function fetchAndStoreMeters() {
