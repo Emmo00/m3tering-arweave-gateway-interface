@@ -1,0 +1,29 @@
+name: Run Sync Meter Data Daily
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at 12:00 AM UTC
+  workflow_dispatch: # allows manual trigger from GitHub UI
+
+jobs:
+  run-fetch-meters:
+    runs-on: ubuntu-latest
+
+    env:
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      ARWEAVE_GATEWAY_URL: ${{ secrets.ARWEAVE_GATEWAY_URL }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20" # change if you're using a different version
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run fetchMeters.ts
+        run: npx ts-node src/jobs/syncMeterData.ts
