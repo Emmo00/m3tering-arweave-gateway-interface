@@ -171,7 +171,7 @@ export async function makeRequestToArweaveNetwork(
       },
     })
 
-    if (response.status === 429 || response.status === 503) {
+    if (response.status === 429 || response.status === 503 || response.status === 529 || response.status === 572) {
       console.warn(
         `Request to ${url} failed with status ${response.status}. retrying...`
       )
@@ -187,8 +187,6 @@ export async function makeRequestToArweaveNetwork(
       }
       throw new Error(`Max attempts reached for ${url}`)
     }
-
-    console.log(`"Success" Response from ${url}:`, response.status)
 
     return response
   } catch (error: any) {
