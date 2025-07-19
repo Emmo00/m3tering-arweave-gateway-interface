@@ -7,7 +7,7 @@ import { makeRequestToArweaveNetwork } from "./helpers";
 
 // Simple in-memory cache with expiration and size limit
 type CacheEntry<T> = { value: T; expiresAt: number };
-const CACHE_MAX_ENTRIES = 500;
+const CACHE_MAX_ENTRIES = 201;
 const cache = new Map<string, CacheEntry<any>>();
 
 function setCache<T>(key: string, value: T, ttlMs: number) {
