@@ -60,22 +60,24 @@ export interface BuildArweaveTransactionQueryConfig {
   sortBy?: string;
 }
 
+export interface ArweaveTransactionEdge {
+  cursor: string;
+  node: {
+    id: string;
+    block: {
+      timestamp: number;
+    };
+    tags?: {
+      name: string;
+      value: string;
+    }[];
+  };
+}
+
 export interface ArweaveTransactionsResponseBody {
   data: {
     transactions: {
-      edges: {
-        cursor: string;
-        node: {
-          id: string;
-          block: {
-            timestamp: number;
-          };
-          tags?: {
-            name: string;
-            value: string;
-          }[];
-        };
-      }[];
+      edges: ArweaveTransactionEdge[];
     };
   };
 }
