@@ -7,7 +7,7 @@ import { makeRequestToArweaveNetwork } from "./helpers";
 
 // Simple in-memory cache with expiration and size limit
 type CacheEntry<T> = { value: T; expiresAt: number };
-const CACHE_MAX_ENTRIES = 500;
+const CACHE_MAX_ENTRIES = 1000;
 const cache = new Map<string, CacheEntry<any>>();
 
 function setCache<T>(key: string, value: T, ttlMs: number) {
@@ -145,13 +145,9 @@ export async function makeRequestToArweave<T>(query: string): Promise<T> {
   // Only cache for HEIGHT_ASC or HEIGHT_DESC
   let cacheKey: string | undefined;
   let cacheTtl: number | undefined;
-  if (sortBy === "HEIGHT_ASC") {
-    cacheKey = `MeterDataPoint:${sortBy}:${query}`;
-    cacheTtl = 24 * 60 * 60 * 1000; // 1 day
-  } else if (sortBy === "HEIGHT_DESC") {
-    cacheKey = `MeterDataPoint:${sortBy}:${query}`;
-    cacheTtl = 60 * 1000; // 1 minute
-  }
+  cacheKey = `MeterDataPoint:${sortBy}:${query}`;
+  cacheTtl = 24 * 60 * 60 * 1000; // 1 day
+  
   if (cacheKey) {
     const cached = getCache<T>(cacheKey);
     if (cached) return cached;
