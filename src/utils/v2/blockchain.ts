@@ -12,22 +12,29 @@ const m3terNftContract = new ethers.Contract(M3TER_NFT_CONTRACT, M3TER_NFT_CONTR
 
 const rollupContract = new ethers.Contract(ROLLUP_CONTRACT_ADDRESS, ROLLUP_CONTRACT_ABI, provider);
 
+const ZERO_BYTES32 = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
 export async function getPublicKey(tokenId: number): Promise<string> {
   try {
     const result = await m3terNftContract.publicKey(tokenId);
     console.log(`Public key for token ${tokenId}:`, result);
-    return result;
+    return result === ZERO_BYTES32 ? "" : result;
   } catch (error) {
     console.error("Error reading public key:", error);
     throw error; // Re-throw the error
   }
 }
 
-/**
- * Checks the nonce for a meter id onchain
- *
- * @returns {Promise<number>} meter nonce onchain
- */
+export async function getNFTTotalSupply() {
+  try {
+    const totalSupply = await m3terNftContract.totalSupply();
+    return totalSupply;
+  } catch (error) {
+    console.error("Error getting NFT total supply:", error);
+    throw error;
+  }
+}
+
 export async function checkNonceOnchain(meterId: number): Promise<number> {
   try {
     const nonce = await rollupContract.nonce(meterId);

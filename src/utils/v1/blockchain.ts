@@ -1,6 +1,5 @@
 import { ethers } from "ethers";
-import PROTOCOL_CONTRACT_ABI from "../../abi/protocolContractABI.json";
-import { PROTOCOL_CONTRACT_ADDRESS } from "../../constants";
+import { PROTOCOL_CONTRACT_ADDRESS, PROTOCOL_CONTRACT_ABI } from "../../constants";
 
 const provider = new ethers.JsonRpcProvider(process.env.GNOSIS_MAINNET_RPC);
 
