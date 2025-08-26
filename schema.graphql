@@ -45,6 +45,7 @@ enum MeterDataPointOrderBy {
 }
 
 type Query {
+  version: String
   meters: [Meter!]!
   meter(meterNumber: String, contractId: String): Meter
 
