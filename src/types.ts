@@ -14,11 +14,27 @@ export interface Meter {
   };
 }
 
+export interface MeterV2 {
+  meterNumber: number;
+  publicKey: string;
+  totalEnergy: number;
+}
+
 export interface MeterDataPointPayload {
   nonce: number;
   voltage: number;
   current: number;
   energy: number;
+  signature: string;
+  publicKey: string;
+}
+
+export interface MeterDataPointPayloadV2 {
+  nonce: number;
+  voltage: number;
+  energy: number;
+  longitude: number;
+  latitude: number;
   signature: string;
   publicKey: string;
 }
@@ -29,6 +45,13 @@ export interface MeterDataPoint {
   meterNumber: string;
   timestamp: number;
   payload: MeterDataPointPayload;
+}
+
+export interface MeterDataPointV2 {
+  transactionId: string;
+  meterNumber: number;
+  timestamp: number;
+  payload: MeterDataPointPayloadV2;
 }
 
 export interface MeterDataPointEdge {
@@ -45,9 +68,20 @@ export interface MeterResolverArgs {
   contractId?: string;
 }
 
+export interface MeterResolverArgsV2 {
+  meterNumber: number;
+}
+
 export interface MeterDataPointsResolverArgs {
   meterNumber?: string;
   contractId?: string;
+  first?: number;
+  after?: string;
+  sortBy?: string;
+}
+
+export interface MeterDataPointsResolverArgsV2 {
+  meterNumber?: number;
   first?: number;
   after?: string;
   sortBy?: string;

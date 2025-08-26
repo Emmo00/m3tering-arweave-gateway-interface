@@ -1,0 +1,44 @@
+type Meter {
+  meterNumber: Int!
+  publicKey: String
+  totalEnergy: Int
+}
+
+type MeterDataPointPayload {
+  nonce: Int
+  voltage: Float
+  energy: Float
+  longitude: Float
+  latitiude: Float
+  signature: String
+  publicKey: String
+}
+
+type MeterDataPoint {
+  transactionId: ID!
+  meterNumber: Int!
+  timestamp: Int
+  payload: MeterDataPointPayload
+}
+
+type MeterDataPointEdge {
+  cursor: String
+  node: MeterDataPoint
+}
+
+enum MeterDataPointOrderBy {
+  HEIGHT_ASC
+  HEIGHT_DESC
+}
+
+type Query {
+  meters: [Meter!]!
+  meter(meterNumber: Int!): Meter
+
+  meterDataPoints(
+    meterNumber: Int!
+    first: Int
+    after: String
+    sortBy: MeterDataPointOrderBy
+  ): [MeterDataPointEdge!]!
+}

@@ -1,5 +1,5 @@
-import { MeterModel } from "../models/Meter";
-import { ArweaveTransactionsResponseBody } from "../types";
+import { MeterModel } from "../../models/Meter";
+import { ArweaveTransactionsResponseBody } from "../../types";
 import {
   buildArweaveQueryForContractId,
   getMeterCurrentState,
@@ -7,7 +7,7 @@ import {
   makeRequestToArweave,
 } from "./arweave";
 import { readTokenByContract, readContractByToken } from "./blockchain";
-import { SyncDump } from "../models/SyncDump";
+import { SyncDump } from "../../models/SyncDump";
 
 export async function fetchAndStoreMeters() {
   let afterCursor: string | null =

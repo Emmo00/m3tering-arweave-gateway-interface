@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
-import { PROTOCOL_CONTRACT_ADDRESS, PROTOCOL_CONTRACT_ABI } from "../constants";
+import PROTOCOL_CONTRACT_ABI from "../../abi/protocolContractABI.json";
+import { PROTOCOL_CONTRACT_ADDRESS } from "../../constants";
 
-const provider = new ethers.JsonRpcProvider(
-  "https://gnosis-mainnet.public.blastapi.io"
-);
+const provider = new ethers.JsonRpcProvider(process.env.GNOSIS_MAINNET_RPC);
+
 const protocolContract = new ethers.Contract(
   PROTOCOL_CONTRACT_ADDRESS,
   PROTOCOL_CONTRACT_ABI,

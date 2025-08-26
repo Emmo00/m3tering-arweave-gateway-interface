@@ -1,8 +1,8 @@
-import { warp } from "../config/warp";
+import { warp } from "../../config/warp";
 import {
   BuildArweaveTransactionQueryConfig,
   MeterTransactionData,
-} from "../types";
+} from "../../types";
 import { makeRequestToArweaveNetwork } from "./helpers";
 
 // Simple in-memory cache with expiration and size limit

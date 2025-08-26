@@ -1,14 +1,14 @@
 import "dotenv/config";
-import { testConnectionToArweaveGateway } from "./utils/arweave";
+import { testConnectionToArweaveGateway } from "./utils/v1/arweave";
 import { connectDB } from "./config/mongo";
 import { startServer } from "./config/server";
-import { fetchAndStoreMeters, updateMetersState } from "./utils/meters";
 
 // start server
 startServer()
   .then(() => {
-    console.log("Server started successfully");
-    connectDB().then(() => {});
+    connectDB().then(() => {
+      console.log("Server started successfully");
+    });
   })
   .catch((error) => {
     console.error("Error starting server:", error);

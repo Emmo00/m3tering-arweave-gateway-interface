@@ -1,4 +1,4 @@
-import { meterDataPointResolver } from "./meterDataPoint";
+import { meterDataPointResolver } from "./meterData";
 import { meterResolver, metersResolver } from "./meters";
 
 export const resolvers = {

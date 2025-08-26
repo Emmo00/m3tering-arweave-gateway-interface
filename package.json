@@ -4,17 +4,20 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "start": "npm run compile && node --max-old-space-size=4096 ./dist/index.js",
-    "dev": "nodemon"
+    "start": "npm run compile && node ./dist/index.js",
+    "dev": "nodemon --watch src --watch . --ext ts,graphql --watch .env"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@apollo/server": "^4.12.0",
+    "@apollo/server": "^5.0.0",
+    "@as-integrations/express5": "^1.1.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "ethers": "^6.14.3",
+    "express": "^5.1.0",
     "graphql": "^16.10.0",
     "mongoose": "^8.14.0",
     "warp-contracts": "^1.4.45"

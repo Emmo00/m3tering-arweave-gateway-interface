@@ -1,6 +1,6 @@
 import os from "os";
-import { MeterDataPointEdge, MeterTransactionData } from "../types";
-import { arweaveConfig } from "../config/arweave";
+import { MeterDataPointEdge, MeterTransactionData } from "../../types";
+import { arweaveConfig } from "../../config/arweave";
 
 const MAX_CONCURRENT_REQUESTS = 20;
 let activeRequests = 0;

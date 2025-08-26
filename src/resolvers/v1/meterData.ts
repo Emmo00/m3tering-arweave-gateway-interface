@@ -4,20 +4,20 @@ import {
   MeterDataPointEdge,
   MeterDataPointsResolverArgs,
   MeterTransactionData,
-} from "../types";
+} from "../../types";
 import {
   buildArweaveTransactionQuery,
   loadTransactionData,
   makeRequestToArweave,
-} from "../utils/arweave";
+} from "../../utils/v1/arweave";
 import {
   buildMeterDataPoint,
   transformOldWarpSchemaToNewSchema,
-} from "../utils/helpers";
+} from "../../utils/v1/helpers";
 import {
   getMeterFromContractId,
   getMeterFromMeterNumber,
-} from "../utils/mongo";
+} from "../../utils/v1/mongo";
 import os from "os";
 
 export async function meterDataPointResolver(

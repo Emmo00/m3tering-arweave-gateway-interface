@@ -1,9 +1,9 @@
-import { Meter, MeterResolverArgs } from "../types";
+import { Meter, MeterResolverArgs } from "../../types";
 import {
   getAllMeters,
   getMeterFromContractId,
   getMeterFromMeterNumber,
-} from "../utils/mongo";
+} from "../../utils/v1/mongo";
 
 export async function metersResolver(): Promise<Meter[]> {
   // get meters from database
