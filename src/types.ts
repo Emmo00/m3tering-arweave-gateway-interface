@@ -17,7 +17,6 @@ export interface Meter {
 export interface MeterV2 {
   meterNumber: number;
   publicKey: string;
-  totalEnergy: number;
 }
 
 export interface MeterDataPointPayload {

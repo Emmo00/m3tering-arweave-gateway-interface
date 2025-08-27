@@ -13,11 +13,10 @@ export async function getMeterFromMeterNumber(
   return meter;
 }
 
-export async function saveMeter({ meterNumber, publicKey, totalEnergy }: MeterV2) {
+export async function saveMeter({ meterNumber, publicKey }: MeterV2) {
   const meter = await MeterModelV2.create({
     meterNumber,
     publicKey,
-    totalEnergy,
   })
 
   return meter;

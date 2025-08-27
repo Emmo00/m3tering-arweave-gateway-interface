@@ -1,7 +1,6 @@
 type Meter {
   meterNumber: Int!
   publicKey: String
-  totalEnergy: Int
 }
 
 type MeterDataPointPayload {
