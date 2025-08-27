@@ -5,10 +5,10 @@ import {
   MeterDataPointsResolverArgs,
   MeterTransactionData,
 } from "../../types";
+import { makeRequestToArweave } from "../../utils/arweave";
 import {
   buildArweaveTransactionQuery,
   loadTransactionData,
-  makeRequestToArweave,
 } from "../../utils/v1/arweave";
 import {
   buildMeterDataPoint,

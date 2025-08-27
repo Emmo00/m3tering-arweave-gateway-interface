@@ -4,7 +4,8 @@ import {
   MeterDataPointEdgeV2,
   MeterDataPointsResolverArgsV2,
 } from "../../types";
-import { buildArweaveTransactionQuery, makeRequestToArweave } from "../../utils/v2/arweave";
+import { makeRequestToArweave } from "../../utils/arweave";
+import { buildArweaveTransactionQuery } from "../../utils/v2/arweave";
 import { buildMeterDataPoint } from "../../utils/v2/helpers";
 
 export async function meterDataPointResolver(

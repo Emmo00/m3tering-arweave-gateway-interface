@@ -1,50 +1,10 @@
 import { warp } from "../../config/warp";
+import { BuildArweaveTransactionQueryConfig, MeterTransactionData } from "../../types";
 import {
-  BuildArweaveTransactionQueryConfig,
-  MeterTransactionData,
-} from "../../types";
-import { makeRequestToArweaveNetwork } from "./helpers";
-
-// Simple in-memory cache with expiration and size limit
-type CacheEntry<T> = { value: T; expiresAt: number };
-const CACHE_MAX_ENTRIES = 120;
-const cache = new Map<string, CacheEntry<any>>();
-
-function setCache<T>(key: string, value: T, ttlMs: number) {
-  // Clean up if over limit
-  if (cache.size >= CACHE_MAX_ENTRIES) {
-    // Remove oldest entry
-    const oldestKey = cache.keys().next().value;
-    cache.delete(oldestKey);
-  }
-  cache.set(key, { value, expiresAt: Date.now() + ttlMs });
-}
-
-function getCache<T>(key: string): T | undefined {
-  const entry = cache.get(key);
-  if (!entry) return undefined;
-  if (Date.now() > entry.expiresAt) {
-    cache.delete(key);
-    return undefined;
-  }
-  return entry.value as T;
-}
-
-export const testConnectionToArweaveGateway = async () => {
-  try {
-    const response = await makeRequestToArweaveNetwork();
-
-    if (!response.ok) {
-      throw new Error("Failed to connect to Arweave");
-    }
-
-    const data = await response.json();
-    console.log("Connected to Arweave:", data);
-  } catch (error) {
-    console.error("Error connecting to Arweave:", error);
-    throw error;
-  }
-};
+  makeRequestToArweaveNetwork,
+  getCache as getArweaveRequestCache,
+  setCache as setArweaveRequestCache,
+} from "../arweave";
 
 export function buildArweaveTransactionQuery({
   contractId,
@@ -134,52 +94,12 @@ export function buildArweaveQueryForContractId({
     }`;
 }
 
-export async function makeRequestToArweave<T>(query: string): Promise<T> {
-  // Determine if this is a MeterDataPoint resolver query and extract sortBy
-  let sortBy: string | undefined;
-  try {
-    // crude extraction of sort: ... from query string
-    const sortMatch = query.match(/sort:\s*([A-Z_]+)/);
-    if (sortMatch) sortBy = sortMatch[1];
-  } catch {}
-  // Only cache for HEIGHT_ASC or HEIGHT_DESC
-  let cacheKey: string | undefined;
-  let cacheTtl: number | undefined;
-  cacheKey = `MeterDataPoint:${sortBy}:${query}`;
-  cacheTtl = 24 * 60 * 60 * 1000; // 1 day
-  
-  if (cacheKey) {
-    const cached = getCache<T>(cacheKey);
-    if (cached) return cached;
-  }
-  try {
-    const response = await makeRequestToArweaveNetwork("/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    if (cacheKey && cacheTtl) setCache(cacheKey, data as T, cacheTtl);
-    return data as T;
-  } catch (error) {
-    console.error("Error making request to Arweave:", error);
-    throw error;
-  }
-}
-
-export async function loadTransactionData<
-  functionName extends "meter" | "initial"
->(transactionId: string): Promise<MeterTransactionData<functionName>> {
+export async function loadTransactionData<functionName extends "meter" | "initial">(
+  transactionId: string
+): Promise<MeterTransactionData<functionName>> {
   const cacheKey = `TransactionData:${transactionId}`;
   const cacheTtl = 24 * 60 * 60 * 1000; // 1 day
-  const cached = getCache<MeterTransactionData<functionName>>(cacheKey);
+  const cached = getArweaveRequestCache<MeterTransactionData<functionName>>(cacheKey);
   if (cached) return cached;
   // ...existing code...
   try {
@@ -195,7 +115,7 @@ export async function loadTransactionData<
     }
 
     const data = await response.json();
-    setCache(cacheKey, data as MeterTransactionData<functionName>, cacheTtl);
+    setArweaveRequestCache(cacheKey, data as MeterTransactionData<functionName>, cacheTtl);
     return data as MeterTransactionData<functionName>;
   } catch (error) {
     console.error("Error loading transaction data from Arweave:", error);
@@ -205,8 +125,7 @@ export async function loadTransactionData<
 
 export async function getMeterCurrentState(contractId: string) {
   console.log("Getting state for", contractId);
-  const meterState = (await warp.contract(contractId).readState()).cachedValue
-    .state;
+  const meterState = (await warp.contract(contractId).readState()).cachedValue.state;
 
   console.log("Meter state:", meterState);
 

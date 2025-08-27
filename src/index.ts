@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { testConnectionToArweaveGateway } from "./utils/v1/arweave";
+import { testConnectionToArweaveGateway } from "./utils/arweave";
 import { connectDB } from "./config/mongo";
 import { startServer } from "./config/server";
 
