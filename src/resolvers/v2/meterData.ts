@@ -1,49 +1,24 @@
 import {
   ArweaveTransactionEdge,
   ArweaveTransactionsResponseBody,
-  MeterDataPointEdge,
-  MeterDataPointsResolverArgs,
-  MeterTransactionData,
+  MeterDataPointEdgeV2,
+  MeterDataPointsResolverArgsV2,
 } from "../../types";
-import {
-  buildArweaveTransactionQuery,
-  loadTransactionData,
-  makeRequestToArweave,
-} from "../../utils/v1/arweave";
-import { buildMeterDataPoint, transformOldWarpSchemaToNewSchema } from "../../utils/v1/helpers";
-import { getMeterFromContractId, getMeterFromMeterNumber } from "../../utils/v1/mongo";
-import os from "os";
+import { buildArweaveTransactionQuery, makeRequestToArweave } from "../../utils/v2/arweave";
+import { buildMeterDataPoint } from "../../utils/v2/helpers";
 
 export async function meterDataPointResolver(
   _: any,
-  args: MeterDataPointsResolverArgs
-): Promise<MeterDataPointEdge[]> {
+  args: MeterDataPointsResolverArgsV2
+): Promise<MeterDataPointEdgeV2[]> {
   console.log("Starting meterDataPointResolver with args:", args);
   const { first, after, sortBy } = args;
-  let { contractId, meterNumber } = args;
-  let meterDataPoints: MeterDataPointEdge[] = [];
-
-  // meterNumber was passed instead of contractId, resolve contractId
-  if (!contractId && meterNumber) {
-    const meter = await getMeterFromMeterNumber(meterNumber);
-    if (!meter) {
-      throw new Error(`No meter found with meterNumber: ${meterNumber}`);
-    }
-
-    contractId = meter.contractId;
-  } else {
-    const meter = await getMeterFromContractId(contractId);
-
-    if (!meter) {
-      throw new Error(`No meter found with contract ID: ${contractId}`);
-    }
-
-    meterNumber = meter.meterNumber;
-  }
+  let { meterNumber } = args;
+  let meterDataPoints: MeterDataPointEdgeV2[] = [];
 
   // get transactions based on query
   const transactionsFromQuery = await getTransactionsFromQuery({
-    contractId,
+    meterNumber,
     first,
     after,
     sortBy,
@@ -52,58 +27,27 @@ export async function meterDataPointResolver(
   // transaction id => edge data mapping
   const transactionIDToEdgeDataMap = transactionsFromQuery.reduce((acc: any, edge: any) => {
     const transactionId = edge.node.id;
-    const blockTimestamp = edge.node.block.timestamp;
     const tags = edge.node.tags.reduce((acc: any, tag: any) => {
       acc[tag.name] = tag.value;
       return acc;
     }, {});
+
     const cursor = edge.cursor;
     acc[transactionId] = {
       id: transactionId,
-      blockTimestamp,
       cursor,
       tags,
     };
     return acc;
   }, {});
 
-  // extract transaction IDs
-  const transactionIds = Object.keys(transactionIDToEdgeDataMap);
-
-  // get transaction data for each transaction ID
-  const transactionData = await Promise.all(
-    transactionIds.map(async (transactionId) => {
-      let response = await loadTransactionData<"meter">(transactionId);
-
-      if (typeof response !== "object") {
-        // load and transform transaction data from tags `Input`
-        const edgeData = transactionIDToEdgeDataMap[transactionId];
-        const inputTag = edgeData.tags["Input"];
-        if (!inputTag) {
-          console.warn(`No input tag found for transaction ID: ${transactionId}`);
-          return null;
-        }
-
-        // transform and parse the input tag
-        response = transformOldWarpSchemaToNewSchema(inputTag) as MeterTransactionData<"meter">;
-      }
-
-      return { response, transactionId };
-    })
-  );
-
   // build meter data point from transaction data and edge data
-  meterDataPoints = buildMeterDataPoint(
-    meterNumber,
-    contractId,
-    transactionData,
-    transactionIDToEdgeDataMap
-  );
+  meterDataPoints = buildMeterDataPoint(transactionIDToEdgeDataMap);
 
   return meterDataPoints;
 }
 
-async function getTransactionsFromQuery({ contractId, first, after, sortBy }) {
+async function getTransactionsFromQuery({ meterNumber, first, after, sortBy }) {
   let transactions: ArweaveTransactionEdge[] = [];
   const max_response_count = 100;
 
@@ -112,7 +56,7 @@ async function getTransactionsFromQuery({ contractId, first, after, sortBy }) {
     const batchSize = remaining > max_response_count ? max_response_count : remaining;
 
     const query = buildArweaveTransactionQuery({
-      contractId,
+      meterNumber,
       first: batchSize,
       after,
       sortBy,

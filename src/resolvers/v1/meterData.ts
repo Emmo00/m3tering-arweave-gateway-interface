@@ -18,7 +18,6 @@ import {
   getMeterFromContractId,
   getMeterFromMeterNumber,
 } from "../../utils/v1/mongo";
-import os from "os";
 
 export async function meterDataPointResolver(
   _: any,

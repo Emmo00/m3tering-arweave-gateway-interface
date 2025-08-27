@@ -35,7 +35,6 @@ export interface MeterDataPointPayloadV2 {
   longitude: number;
   latitude: number;
   signature: string;
-  publicKey: string;
 }
 
 export interface MeterDataPoint {
@@ -56,6 +55,11 @@ export interface MeterDataPointV2 {
 export interface MeterDataPointEdge {
   cursor: string;
   node: MeterDataPoint;
+}
+
+export interface MeterDataPointEdgeV2 {
+  cursor: string;
+  node: MeterDataPointV2;
 }
 
 export interface MeterDataPointConnection {
@@ -88,6 +92,13 @@ export interface MeterDataPointsResolverArgsV2 {
 
 export interface BuildArweaveTransactionQueryConfig {
   contractId: string;
+  after?: string;
+  first?: number;
+  sortBy?: string;
+}
+
+export interface BuildArweaveTransactionQueryConfigV2 {
+  meterNumber: number;
   after?: string;
   first?: number;
   sortBy?: string;
