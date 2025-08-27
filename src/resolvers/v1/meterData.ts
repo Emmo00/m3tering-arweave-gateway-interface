@@ -4,26 +4,17 @@ import {
   MeterDataPointEdge,
   MeterDataPointsResolverArgs,
   MeterTransactionData,
-} from "../../types";
-import { makeRequestToArweave } from "../../utils/arweave";
-import {
-  buildArweaveTransactionQuery,
-  loadTransactionData,
-} from "../../utils/v1/arweave";
-import {
-  buildMeterDataPoint,
-  transformOldWarpSchemaToNewSchema,
-} from "../../utils/v1/helpers";
-import {
-  getMeterFromContractId,
-  getMeterFromMeterNumber,
-} from "../../utils/v1/mongo";
+} from '../../types';
+import { makeRequestToArweave } from '../../utils/arweave';
+import { buildArweaveTransactionQuery, loadTransactionData } from '../../utils/v1/arweave';
+import { buildMeterDataPoint, transformOldWarpSchemaToNewSchema } from '../../utils/v1/helpers';
+import { getMeterFromContractId, getMeterFromMeterNumber } from '../../utils/v1/mongo';
 
 export async function meterDataPointResolver(
   _: any,
-  args: MeterDataPointsResolverArgs
+  args: MeterDataPointsResolverArgs,
 ): Promise<MeterDataPointEdge[]> {
-  console.log("Starting meterDataPointResolver with args:", args);
+  console.log('Starting meterDataPointResolver with args:', args);
   const { first, after, sortBy } = args;
   let { contractId, meterNumber } = args;
   let meterDataPoints: MeterDataPointEdge[] = [];
@@ -55,25 +46,22 @@ export async function meterDataPointResolver(
   });
 
   // transaction id => edge data mapping
-  const transactionIDToEdgeDataMap = transactionsFromQuery.reduce(
-    (acc: any, edge: any) => {
-      const transactionId = edge.node.id;
-      const blockTimestamp = edge.node.block.timestamp;
-      const tags = edge.node.tags.reduce((acc: any, tag: any) => {
-        acc[tag.name] = tag.value;
-        return acc;
-      }, {});
-      const cursor = edge.cursor;
-      acc[transactionId] = {
-        id: transactionId,
-        blockTimestamp,
-        cursor,
-        tags,
-      };
+  const transactionIDToEdgeDataMap = transactionsFromQuery.reduce((acc: any, edge: any) => {
+    const transactionId = edge.node.id;
+    const blockTimestamp = edge.node.block.timestamp;
+    const tags = edge.node.tags.reduce((acc: any, tag: any) => {
+      acc[tag.name] = tag.value;
       return acc;
-    },
-    {}
-  );
+    }, {});
+    const cursor = edge.cursor;
+    acc[transactionId] = {
+      id: transactionId,
+      blockTimestamp,
+      cursor,
+      tags,
+    };
+    return acc;
+  }, {});
 
   // extract transaction IDs
   const transactionIds = Object.keys(transactionIDToEdgeDataMap);
@@ -81,27 +69,23 @@ export async function meterDataPointResolver(
   // get transaction data for each transaction ID
   const transactionData = await Promise.all(
     transactionIds.map(async (transactionId) => {
-      let response = await loadTransactionData<"meter">(transactionId);
+      let response = await loadTransactionData<'meter'>(transactionId);
 
-      if (typeof response !== "object") {
+      if (typeof response !== 'object') {
         // load and transform transaction data from tags `Input`
         const edgeData = transactionIDToEdgeDataMap[transactionId];
-        const inputTag = edgeData.tags["Input"];
+        const inputTag = edgeData.tags['Input'];
         if (!inputTag) {
-          console.warn(
-            `No input tag found for transaction ID: ${transactionId}`
-          );
+          console.warn(`No input tag found for transaction ID: ${transactionId}`);
           return null;
         }
 
         // transform and parse the input tag
-        response = transformOldWarpSchemaToNewSchema(
-          inputTag
-        ) as MeterTransactionData<"meter">;
+        response = transformOldWarpSchemaToNewSchema(inputTag) as MeterTransactionData<'meter'>;
       }
 
       return { response, transactionId };
-    })
+    }),
   );
 
   // build meter data point from transaction data and edge data
@@ -109,7 +93,7 @@ export async function meterDataPointResolver(
     meterNumber,
     contractId,
     transactionData,
-    transactionIDToEdgeDataMap
+    transactionIDToEdgeDataMap,
   );
 
   return meterDataPoints;
@@ -121,8 +105,7 @@ async function getTransactionsFromQuery({ contractId, first, after, sortBy }) {
 
   for (let i = 0; i < first; ) {
     const remaining = first - i;
-    const batchSize =
-      remaining > max_response_count ? max_response_count : remaining;
+    const batchSize = remaining > max_response_count ? max_response_count : remaining;
 
     const query = buildArweaveTransactionQuery({
       contractId,
@@ -131,15 +114,12 @@ async function getTransactionsFromQuery({ contractId, first, after, sortBy }) {
       sortBy,
     });
 
-    const response =
-      await makeRequestToArweave<ArweaveTransactionsResponseBody>(query);
+    const response = await makeRequestToArweave<ArweaveTransactionsResponseBody>(query);
     const edges = response.data.transactions.edges;
     const nbNewTransactions = edges.length;
 
     if (nbNewTransactions === 0) {
-      console.warn(
-        "No new transactions received. Breaking out to avoid infinite loop."
-      );
+      console.warn('No new transactions received. Breaking out to avoid infinite loop.');
       break;
     }
 

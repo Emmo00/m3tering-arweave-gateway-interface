@@ -126,16 +126,16 @@ export interface ArweaveTransactionsResponseBody {
   };
 }
 
-export type MeterTransactionData<FunctionName extends "meter" | "initial"> =
-  FunctionName extends "meter"
+export type MeterTransactionData<FunctionName extends 'meter' | 'initial'> =
+  FunctionName extends 'meter'
     ? {
         input: {
           payload: [string, string, string];
           function: FunctionName;
         };
       }
-    : FunctionName extends "initial"
-    ? {
-        token_id: number;
-      }
-    : never;
+    : FunctionName extends 'initial'
+      ? {
+          token_id: number;
+        }
+      : never;

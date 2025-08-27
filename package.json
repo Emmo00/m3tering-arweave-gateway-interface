@@ -5,7 +5,10 @@
   "scripts": {
     "compile": "tsc",
     "start": "npm run compile && node ./dist/index.js",
-    "dev": "nodemon --watch src --watch . --ext ts,graphql --watch .env"
+    "dev": "nodemon --watch src --watch . --ext ts,graphql --watch .env",
+    "format": "prettier --write .",
+    "check-format": "prettier --check .",
+    "ci": "npm run build && npm run check-format"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +29,7 @@
   "devDependencies": {
     "@types/node": "^22.14.1",
     "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

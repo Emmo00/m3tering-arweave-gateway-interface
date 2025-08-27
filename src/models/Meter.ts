@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const MeterSchema = new mongoose.Schema({
   contractId: String,
@@ -9,4 +9,4 @@ const MeterSchema = new mongoose.Schema({
   },
 });
 
-export const MeterModel = mongoose.model("Meter", MeterSchema);
+export const MeterModel = mongoose.model('Meter', MeterSchema);

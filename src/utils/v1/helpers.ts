@@ -1,11 +1,11 @@
-import { MeterDataPointEdge, MeterTransactionData } from "../../types";
+import { MeterDataPointEdge, MeterTransactionData } from '../../types';
 
 export function buildMeterDataPoint(
   meterNumber_: string,
   contractId_: string,
   transactionData: {
     transactionId: string;
-    response: MeterTransactionData<"meter">;
+    response: MeterTransactionData<'meter'>;
   }[],
   transactionIDToEdgeDataMap: {
     [key: string]: {
@@ -14,7 +14,7 @@ export function buildMeterDataPoint(
       blockTimestamp: number;
       tags: any;
     };
-  }
+  },
 ): MeterDataPointEdge[] {
   return transactionData
     .map(({ transactionId, response }) => {
@@ -25,31 +25,27 @@ export function buildMeterDataPoint(
         return null;
       }
 
-      if (typeof response !== "object") {
+      if (typeof response !== 'object') {
         console.warn(
-          `Invalid response for transaction ID: ${transactionId}, expected object but got ${typeof response}`
+          `Invalid response for transaction ID: ${transactionId}, expected object but got ${typeof response}`,
         );
         return null;
       }
       if (!response.input || !response.input.payload) {
-        console.warn(
-          `Invalid response structure for transaction ID: ${transactionId}`
-        );
+        console.warn(`Invalid response structure for transaction ID: ${transactionId}`);
         return null;
       }
 
       if (response.input.payload.length !== 3) {
         console.warn(
-          `Invalid payload length for transaction ID: ${transactionId}, expected 3 but got ${response.input.payload.length}`
+          `Invalid payload length for transaction ID: ${transactionId}, expected 3 but got ${response.input.payload.length}`,
         );
         return null;
       }
 
-      const [nonce, voltage, current, energy] = JSON.parse(
-        response.input.payload[0]
-      );
+      const [nonce, voltage, current, energy] = JSON.parse(response.input.payload[0]);
 
-      const contractId = edgeData.tags["Contract"] || contractId_ || null;
+      const contractId = edgeData.tags['Contract'] || contractId_ || null;
 
       return {
         cursor: edgeData.cursor,
@@ -92,14 +88,10 @@ export function transformOldWarpSchemaToNewSchema(transactionData: string) {
   const [nonce, voltage, current, energy = 0] = payload;
   const newSchema = {
     input: {
-      payload: [
-        JSON.stringify([nonce, voltage, current, energy]),
-        signature,
-        publicKey,
-      ],
+      payload: [JSON.stringify([nonce, voltage, current, energy]), signature, publicKey],
       function: func,
     },
   };
-  console.log("newSchema", newSchema);
+  console.log('newSchema', newSchema);
   return newSchema;
 }

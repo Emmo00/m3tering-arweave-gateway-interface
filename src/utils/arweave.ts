@@ -1,4 +1,4 @@
-import { arweaveConfig } from "../config/arweave";
+import { arweaveConfig } from '../config/arweave';
 
 // Simple in-memory cache with expiration and size limit
 type CacheEntry<T> = { value: T; expiresAt: number };
@@ -48,10 +48,10 @@ export async function makeRequestToArweave<T>(query: string): Promise<T> {
     if (cached) return cached;
   }
   try {
-    const response = await makeRequestToArweaveNetwork("/graphql", {
-      method: "POST",
+    const response = await makeRequestToArweaveNetwork('/graphql', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ query }),
     });
@@ -64,7 +64,7 @@ export async function makeRequestToArweave<T>(query: string): Promise<T> {
     if (cacheKey && cacheTtl) setCache(cacheKey, data as T, cacheTtl);
     return data as T;
   } catch (error) {
-    console.error("Error making request to Arweave:", error);
+    console.error('Error making request to Arweave:', error);
     throw error;
   }
 }
@@ -78,10 +78,10 @@ export async function makeRequestToArweave<T>(query: string): Promise<T> {
  * @throws Error if the request fails
  */
 export async function makeRequestToArweaveNetwork(
-  path: string = "/",
+  path: string = '/',
   config: RequestInit = {},
   attempt: number = 0,
-  maxAttempts: number = 5
+  maxAttempts: number = 5,
 ): Promise<Response> {
   return enqueue(async () => {
     const url = arweaveConfig.getGatewayUrl() + path;
@@ -92,7 +92,7 @@ export async function makeRequestToArweaveNetwork(
       const response = await fetch(url, {
         ...config,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           ...config.headers,
         },
       });
@@ -104,7 +104,7 @@ export async function makeRequestToArweaveNetwork(
         response.status === 572
       ) {
         process.stdout.write(
-          `Request to ${url} failed with status ${response.status}. retrying...\r`
+          `Request to ${url} failed with status ${response.status}. retrying...\r`,
         );
         // wait 10ms and try again
         if (attempt < maxAttempts) {
@@ -117,9 +117,9 @@ export async function makeRequestToArweaveNetwork(
       return response;
     } catch (error: any) {
       const isTimeout =
-        error?.code === "ETIMEDOUT" ||
-        error?.message?.includes("fetch failed") ||
-        error?.cause?.code === "ETIMEDOUT";
+        error?.code === 'ETIMEDOUT' ||
+        error?.message?.includes('fetch failed') ||
+        error?.cause?.code === 'ETIMEDOUT';
 
       if (isTimeout) {
         console.error(`Timeout when accessing ${url}. retrying...`);
@@ -160,13 +160,13 @@ export const testConnectionToArweaveGateway = async () => {
     const response = await makeRequestToArweaveNetwork();
 
     if (!response.ok) {
-      throw new Error("Failed to connect to Arweave");
+      throw new Error('Failed to connect to Arweave');
     }
 
     const data = await response.json();
-    console.log("Connected to Arweave:", data);
+    console.log('Connected to Arweave:', data);
   } catch (error) {
-    console.error("Error connecting to Arweave:", error);
+    console.error('Error connecting to Arweave:', error);
     throw error;
   }
 };

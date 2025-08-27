@@ -1,10 +1,10 @@
-import { warp } from "../../config/warp";
-import { BuildArweaveTransactionQueryConfig, MeterTransactionData } from "../../types";
+import { warp } from '../../config/warp';
+import { BuildArweaveTransactionQueryConfig, MeterTransactionData } from '../../types';
 import {
   makeRequestToArweaveNetwork,
   getCache as getArweaveRequestCache,
   setCache as setArweaveRequestCache,
-} from "../arweave";
+} from '../arweave';
 
 export function buildArweaveTransactionQuery({
   contractId,
@@ -15,8 +15,8 @@ export function buildArweaveTransactionQuery({
   return `{
         transactions(
             first: ${first || 10}
-            sort: ${sortBy || "HEIGHT_DESC"}
-            after: "${after || ""}"
+            sort: ${sortBy || 'HEIGHT_DESC'}
+            after: "${after || ''}"
             tags: [
                 { name: "Contract-Use", values: ["M3tering Protocol"] },
                 { name: "Bundle-Format", values: ["binary", "json"], op: NEQ }
@@ -28,7 +28,7 @@ export function buildArweaveTransactionQuery({
                     values: ["${contractId}"]
                 }
                     `
-                : ""
+                : ''
             }
             ]
         ) {
@@ -72,10 +72,10 @@ export function buildArweaveQueryForContractId({
                   op: NEQ
                 }
                   `
-                : ""
+                : ''
             }
                 ]
-            after: "${after || ""}"
+            after: "${after || ''}"
         ) {
             edges {
                 cursor
@@ -94,8 +94,8 @@ export function buildArweaveQueryForContractId({
     }`;
 }
 
-export async function loadTransactionData<functionName extends "meter" | "initial">(
-  transactionId: string
+export async function loadTransactionData<functionName extends 'meter' | 'initial'>(
+  transactionId: string,
 ): Promise<MeterTransactionData<functionName>> {
   const cacheKey = `TransactionData:${transactionId}`;
   const cacheTtl = 24 * 60 * 60 * 1000; // 1 day
@@ -104,9 +104,9 @@ export async function loadTransactionData<functionName extends "meter" | "initia
   // ...existing code...
   try {
     const response = await makeRequestToArweaveNetwork(`/${transactionId}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
@@ -118,16 +118,16 @@ export async function loadTransactionData<functionName extends "meter" | "initia
     setArweaveRequestCache(cacheKey, data as MeterTransactionData<functionName>, cacheTtl);
     return data as MeterTransactionData<functionName>;
   } catch (error) {
-    console.error("Error loading transaction data from Arweave:", error);
+    console.error('Error loading transaction data from Arweave:', error);
     throw error;
   }
 }
 
 export async function getMeterCurrentState(contractId: string) {
-  console.log("Getting state for", contractId);
+  console.log('Getting state for', contractId);
   const meterState = (await warp.contract(contractId).readState()).cachedValue.state;
 
-  console.log("Meter state:", meterState);
+  console.log('Meter state:', meterState);
 
   return meterState;
 }

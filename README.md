@@ -15,58 +15,58 @@ Before setting up the project, ensure you have the following installed:
 
 1. **Clone the Repository**:
 
-    ```bash
-    git clone <repository-url>
-    cd m3tering-arweave-gateway-interface
-    ```
+   ```bash
+   git clone <repository-url>
+   cd m3tering-arweave-gateway-interface
+   ```
 
 2. **Install Dependencies**:
-    Install the required dependencies using npm:
+   Install the required dependencies using npm:
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
 3. **Configure Environment Variables**:
-    Create a `.env` file in the root directory by copying the provided `.env.example` file:
+   Create a `.env` file in the root directory by copying the provided `.env.example` file:
 
-    ```bash
-    cp .env.example .env
-    ```
+   ```bash
+   cp .env.example .env
+   ```
 
-    Update the `.env` file with your Arweave Gateway URL and MongoDB URI:
+   Update the `.env` file with your Arweave Gateway URL and MongoDB URI:
 
-    ```env
-    ARWEAVE_GATEWAY_URL=<your-arweave-gateway-url>
-    MONGODB_URI=<your-mongodb-uri>
-    ```
+   ```env
+   ARWEAVE_GATEWAY_URL=<your-arweave-gateway-url>
+   MONGODB_URI=<your-mongodb-uri>
+   ```
 
 4. **Compile the TypeScript Code**:
-    Compile the TypeScript code into JavaScript:
+   Compile the TypeScript code into JavaScript:
 
-    ```bash
-    npm run compile
-    ```
+   ```bash
+   npm run compile
+   ```
 
 5. **Run the Application**:
-    Start the application:
+   Start the application:
 
-    ```bash
-    npm start
-    ```
+   ```bash
+   npm start
+   ```
 
-    Alternatively, for development with hot-reloading:
+   Alternatively, for development with hot-reloading:
 
-    ```bash
-    npm run dev
-    ```
+   ```bash
+   npm run dev
+   ```
 
 6. **Access the GraphQL Interface**:
-    Once the application is running, you can access the GraphQL interface at:
+   Once the application is running, you can access the GraphQL interface at:
 
-    ```browser
-    http://localhost:4001/graphql
-    ```
+   ```browser
+   http://localhost:4001/graphql
+   ```
 
 ## Project Structure
 

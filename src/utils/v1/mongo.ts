@@ -1,9 +1,7 @@
-import { MeterModel } from "../../models/Meter";
-import { Meter } from "../../types";
+import { MeterModel } from '../../models/Meter';
+import { Meter } from '../../types';
 
-export async function getMeterFromMeterNumber(
-  meterNumber: string
-): Promise<Meter | null> {
+export async function getMeterFromMeterNumber(meterNumber: string): Promise<Meter | null> {
   const meter = await MeterModel.findOne({ meterNumber }).exec();
   if (!meter) {
     console.error(`No meter found with meterNumber: ${meterNumber}`);
@@ -17,9 +15,7 @@ export async function getMeterFromMeterNumber(
   };
 }
 
-export async function getMeterFromContractId(
-  contractId: string
-): Promise<Meter | null> {
+export async function getMeterFromContractId(contractId: string): Promise<Meter | null> {
   const meter = await MeterModel.findOne({ contractId }).exec();
   if (!meter) {
     console.error(`No meter found with contractId: ${contractId}`);
@@ -36,7 +32,7 @@ export async function getMeterFromContractId(
 export async function getAllMeters(): Promise<Meter[]> {
   const meters = await MeterModel.find({}).exec();
   if (!meters || meters.length === 0) {
-    console.error("No meters found in the database");
+    console.error('No meters found in the database');
     return [];
   }
 

@@ -1,7 +1,7 @@
 #!/bin/env node
-import "dotenv/config";
-import { updateMetersState } from "../utils/v1/meters";
-import { connectDB } from "../config/mongo";
+import 'dotenv/config';
+import { updateMetersState } from '../utils/v1/meters';
+import { connectDB } from '../config/mongo';
 
 connectDB().then(() => {
   updateMetersState()

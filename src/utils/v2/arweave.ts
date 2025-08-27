@@ -1,4 +1,4 @@
-import { BuildArweaveTransactionQueryConfigV2 } from "../../types";
+import { BuildArweaveTransactionQueryConfigV2 } from '../../types';
 
 export function buildArweaveTransactionQuery({
   meterNumber,
@@ -9,8 +9,8 @@ export function buildArweaveTransactionQuery({
   return `{
         transactions(
             first: ${first || 10}
-            sort: ${sortBy || "HEIGHT_DESC"}
-            after: "${after || ""}"
+            sort: ${sortBy || 'HEIGHT_DESC'}
+            after: "${after || ''}"
             tags: [
                 { name: "Contract-Use", values: ["M3tering Protocol"] },
                 { name: "Content-Type", values: ["text/plain"] },
@@ -22,7 +22,7 @@ export function buildArweaveTransactionQuery({
                     values: ["${meterNumber}"]
                 }
                     `
-                : ""
+                : ''
             }
             ]
         ) {

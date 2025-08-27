@@ -1,12 +1,12 @@
-import { ethers } from "ethers";
-import { PROTOCOL_CONTRACT_ADDRESS, PROTOCOL_CONTRACT_ABI } from "../../constants";
+import { ethers } from 'ethers';
+import { PROTOCOL_CONTRACT_ADDRESS, PROTOCOL_CONTRACT_ABI } from '../../constants';
 
 const provider = new ethers.JsonRpcProvider(process.env.GNOSIS_MAINNET_RPC);
 
 const protocolContract = new ethers.Contract(
   PROTOCOL_CONTRACT_ADDRESS,
   PROTOCOL_CONTRACT_ABI,
-  provider
+  provider,
 );
 
 export async function readContractByToken(tokenId: string): Promise<string> {
@@ -15,7 +15,7 @@ export async function readContractByToken(tokenId: string): Promise<string> {
     console.log(`Contract for token ${tokenId}:`, result);
     return result;
   } catch (error) {
-    console.error("Error reading contract:", error);
+    console.error('Error reading contract:', error);
     throw error; // Re-throw the error
   }
 }
@@ -26,7 +26,7 @@ export async function readTokenByContract(contractAddress: string): Promise<bigi
     console.log(`Token for contract ${contractAddress}:`, result);
     return result;
   } catch (error) {
-    console.error("Error reading token:", error);
+    console.error('Error reading token:', error);
     throw error; // Re-throw the error
   }
 }

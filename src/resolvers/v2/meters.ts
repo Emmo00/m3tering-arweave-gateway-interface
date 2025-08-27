@@ -1,7 +1,7 @@
-import { ethers } from "ethers";
-import { MeterResolverArgsV2, MeterV2 } from "../../types";
-import { getCummulativeEnergy, getNFTTotalSupply, getPublicKey } from "../../utils/v2/blockchain";
-import { getAllMeters, getMeterFromMeterNumber, saveMeter } from "../../utils/v2/mongo";
+import { ethers } from 'ethers';
+import { MeterResolverArgsV2, MeterV2 } from '../../types';
+import { getCummulativeEnergy, getNFTTotalSupply, getPublicKey } from '../../utils/v2/blockchain';
+import { getAllMeters, getMeterFromMeterNumber, saveMeter } from '../../utils/v2/mongo';
 
 async function getMeterData(meterNumber: number): Promise<MeterV2 | null> {
   const nftTokenSupply = await getNFTTotalSupply();

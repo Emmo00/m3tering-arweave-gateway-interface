@@ -3,16 +3,16 @@ import {
   ArweaveTransactionsResponseBody,
   MeterDataPointEdgeV2,
   MeterDataPointsResolverArgsV2,
-} from "../../types";
-import { makeRequestToArweave } from "../../utils/arweave";
-import { buildArweaveTransactionQuery } from "../../utils/v2/arweave";
-import { buildMeterDataPoint } from "../../utils/v2/helpers";
+} from '../../types';
+import { makeRequestToArweave } from '../../utils/arweave';
+import { buildArweaveTransactionQuery } from '../../utils/v2/arweave';
+import { buildMeterDataPoint } from '../../utils/v2/helpers';
 
 export async function meterDataPointResolver(
   _: any,
-  args: MeterDataPointsResolverArgsV2
+  args: MeterDataPointsResolverArgsV2,
 ): Promise<MeterDataPointEdgeV2[]> {
-  console.log("Starting meterDataPointResolver with args:", args);
+  console.log('Starting meterDataPointResolver with args:', args);
   const { first, after, sortBy } = args;
   let { meterNumber } = args;
   let meterDataPoints: MeterDataPointEdgeV2[] = [];
@@ -68,7 +68,7 @@ async function getTransactionsFromQuery({ meterNumber, first, after, sortBy }) {
     const nbNewTransactions = edges.length;
 
     if (nbNewTransactions === 0) {
-      console.warn("No new transactions received. Breaking out to avoid infinite loop.");
+      console.warn('No new transactions received. Breaking out to avoid infinite loop.');
       break;
     }
 

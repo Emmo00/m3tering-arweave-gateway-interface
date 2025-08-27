@@ -1,53 +1,52 @@
-import { MeterModel } from "../../models/Meter";
-import { ArweaveTransactionsResponseBody } from "../../types";
+import { MeterModel } from '../../models/Meter';
+import { ArweaveTransactionsResponseBody } from '../../types';
 import {
   buildArweaveQueryForContractId,
   getMeterCurrentState,
   loadTransactionData,
   makeRequestToArweave,
-} from "./arweave";
-import { readTokenByContract, readContractByToken } from "./blockchain";
-import { SyncDump } from "../../models/SyncDump";
+} from './arweave';
+import { readTokenByContract, readContractByToken } from './blockchain';
+import { SyncDump } from '../../models/SyncDump';
 
 export async function fetchAndStoreMeters() {
-  let afterCursor: string | null =
-    (await SyncDump.getLastAfterCursor()) || null;
+  let afterCursor: string | null = (await SyncDump.getLastAfterCursor()) || null;
   let dublicateContractIds: string[] = await SyncDump.getSeenContractIds();
 
   // while there are more contractIDs to handle
   while (true) {
     // get meters' contract ID already stored in the database
-    const storedContractIds = (
-      await MeterModel.find({}, { contractId: 1 })
-    ).map((meter) => meter.contractId);
+    const storedContractIds = (await MeterModel.find({}, { contractId: 1 })).map(
+      (meter) => meter.contractId,
+    );
     // fetch one transaction from arweave that doesnt have already stored contractID
     const query = buildArweaveQueryForContractId({
       exclude: [...storedContractIds, ...dublicateContractIds],
       after: afterCursor,
     });
 
-    const arweaveResponse =
-      await makeRequestToArweave<ArweaveTransactionsResponseBody>(query);
+    const arweaveResponse = await makeRequestToArweave<ArweaveTransactionsResponseBody>(query);
     const transactionEdges = arweaveResponse.data.transactions.edges;
     if (transactionEdges.length === 0) {
       // no more transactions to process
       break;
     }
     const transaction = transactionEdges[0].node;
-    const tags = transaction.tags.reduce((acc, tag) => {
-      acc[tag.name] = tag.value;
-      return acc;
-    }, {} as Record<string, string>);
+    const tags = transaction.tags.reduce(
+      (acc, tag) => {
+        acc[tag.name] = tag.value;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
 
-    const contractId = tags["Contract"];
+    const contractId = tags['Contract'];
 
     if (!contractId) {
       // if no contract ID found in the transaction tags
       afterCursor = transactionEdges[0].cursor;
       await SyncDump.setLastAfterCursor(afterCursor);
-      console.error(
-        `No contract ID found in transaction[${transaction.id}] tags`
-      );
+      console.error(`No contract ID found in transaction[${transaction.id}] tags`);
       continue;
     }
 
@@ -56,23 +55,19 @@ export async function fetchAndStoreMeters() {
     let contractIdForToken = await readContractByToken(tokenForContract);
 
     if (
-      tokenForContract === "0" || // if token is not found
+      tokenForContract === '0' || // if token is not found
       contractIdForToken !== contractId // or if contract ID does not match the one from the transaction
     ) {
       afterCursor = transactionEdges[0].cursor;
       await SyncDump.setLastAfterCursor(afterCursor);
       dublicateContractIds.push(contractId);
       await SyncDump.addSeenContractId(contractId);
-      console.error(
-        `Contract ID ${contractId} not found on the blockchain, skipping`
-      );
+      console.error(`Contract ID ${contractId} not found on the blockchain, skipping`);
       continue;
     }
 
     // fetch the initial state for the contract
-    const contractInitialState = await loadTransactionData<"initial">(
-      contractId
-    );
+    const contractInitialState = await loadTransactionData<'initial'>(contractId);
 
     // store the contract ID and initial in the database synchronously
     await new MeterModel({
@@ -81,15 +76,15 @@ export async function fetchAndStoreMeters() {
       state: contractInitialState,
     }).save();
 
-    console.log("saved meter for contractId:", contractId);
+    console.log('saved meter for contractId:', contractId);
   }
 
   // get meters' contract ID already stored in the database
   const storedContractIds = (await MeterModel.find({}, { contractId: 1 })).map(
-    (meter) => meter.contractId
+    (meter) => meter.contractId,
   );
 
-  console.log("storedContractIds", storedContractIds);
+  console.log('storedContractIds', storedContractIds);
 }
 
 export async function updateMetersState() {
@@ -119,20 +114,15 @@ export async function updateMetersState() {
     }
 
     // update the state in the database
-    await MeterModel.updateOne(
-      { contractId },
-      { $set: { state: currentState } }
-    );
+    await MeterModel.updateOne({ contractId }, { $set: { state: currentState } });
     console.log(
-      `Updated state for contract ID: ${contractId}, new state: ${JSON.stringify(
-        currentState
-      )}`
+      `Updated state for contract ID: ${contractId}, new state: ${JSON.stringify(currentState)}`,
     );
   }
 
   if (numberOfMeters !== numberOfMetersSynced) {
     throw new Error(
-      `Number of meters is ${numberOfMeters} but number of meters synced is ${numberOfMetersSynced}`
+      `Number of meters is ${numberOfMeters} but number of meters synced is ${numberOfMetersSynced}`,
     );
   }
 }
