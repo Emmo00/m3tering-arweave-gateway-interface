@@ -44,8 +44,9 @@ export async function startServer() {
   app.use('/', express.json(), expressMiddleware(serverV1)); // maintain V1 as default for "/graphql"
 
   return await new Promise<void>((resolve) => {
-    const PORT = process.env.PORT || 4000;
-    httpServer.listen({ port: PORT }, () => {
+    const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
+    const hostname = process.env.HOSTNAME || '0.0.0.0';
+    httpServer.listen(PORT, hostname, () => {
       console.log('Subgraph server started on port', PORT);
       resolve();
     });
