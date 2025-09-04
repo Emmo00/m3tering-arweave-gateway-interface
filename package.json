@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "start": "npm run compile && node --max-old-space-size=8192 ./dist/index.js",
+    "start": "npm run compile && node --max-old-space-size=258 ./dist/index.js",
     "dev": "nodemon --watch src --watch . --ext ts,graphql --watch .env",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
