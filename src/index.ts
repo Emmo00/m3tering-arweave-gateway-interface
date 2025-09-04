@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { testConnectionToArweaveGateway } from './utils/arweave';
 import { connectDB } from './config/mongo';
 import { startServer } from './config/server';
 
@@ -13,5 +12,3 @@ startServer()
   .catch((error) => {
     console.error('Error starting server:', error);
   });
-
-testConnectionToArweaveGateway().then(() => {});
