@@ -9,27 +9,27 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { resolvers as v1Resolvers } from '../resolvers/v1/index';
 import { resolvers as v2Resolvers } from '../resolvers/v2/index';
 
-// load graphql schema from file
-const typeDefsV1 = fs.readFileSync('./schema.graphql', 'utf-8');
-const typeDefsV2 = fs.readFileSync('./schema.v2.graphql', 'utf-8');
-
-const app = express();
-const httpServer = http.createServer(app);
-
-// The ApolloServer constructor
-const serverV1 = new ApolloServer({
-  typeDefs: typeDefsV1,
-  resolvers: v1Resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-});
-
-const serverV2 = new ApolloServer({
-  typeDefs: typeDefsV2,
-  resolvers: v2Resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-});
-
 export async function startServer() {
+  // load graphql schema from file
+  const typeDefsV1 = fs.readFileSync('./schema.graphql', 'utf-8');
+  const typeDefsV2 = fs.readFileSync('./schema.v2.graphql', 'utf-8');
+
+  const app = express();
+  const httpServer = http.createServer(app);
+
+  // The ApolloServer constructor
+  const serverV1 = new ApolloServer({
+    typeDefs: typeDefsV1,
+    resolvers: v1Resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  });
+
+  const serverV2 = new ApolloServer({
+    typeDefs: typeDefsV2,
+    resolvers: v2Resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+  });
+  
   await serverV1.start();
   await serverV2.start();
 
