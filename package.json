@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "tsc",
-    "start": "npx ts-node index.js",
+    "start": "npx ts-node src/index.ts",
     "dev": "nodemon --watch src --watch . --ext ts,graphql --watch .env",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
