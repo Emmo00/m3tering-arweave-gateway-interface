@@ -12,7 +12,7 @@ export function buildArweaveTransactionQuery({
             sort: ${sortBy || 'HEIGHT_DESC'}
             after: "${after || ''}"
             tags: [
-                { name: "Contract-Use", values: ["M3tering Protocol"] },
+                { name: "Contract-Use", values: ["M3tering Protocol Test"] },
                 { name: "Content-Type", values: ["text/plain"] },
             ${
               !meterNumber && meterNumber !== 0

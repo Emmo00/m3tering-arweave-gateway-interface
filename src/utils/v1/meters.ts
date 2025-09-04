@@ -4,8 +4,8 @@ import {
   buildArweaveQueryForContractId,
   getMeterCurrentState,
   loadTransactionData,
-  makeRequestToArweave,
 } from './arweave';
+import { makeRequestToArweave } from '../arweave';
 import { readTokenByContract, readContractByToken } from './blockchain';
 import { SyncDump } from '../../models/SyncDump';
 
