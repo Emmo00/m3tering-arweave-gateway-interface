@@ -30,7 +30,7 @@ type MeterDataPoint {
   transactionId: ID!
   contractId: String
   meterNumber: String
-  timestamp: Int
+  timestamp: Float
   payload: MeterDataPointPayload
 }
 

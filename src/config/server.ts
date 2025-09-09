@@ -29,7 +29,7 @@ export async function startServer() {
     resolvers: v2Resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
-  
+
   await serverV1.start();
   await serverV2.start();
 
@@ -45,8 +45,9 @@ export async function startServer() {
 
   return await new Promise<void>((resolve) => {
     const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
-    const hostname = process.env.HOSTNAME || '0.0.0.0';
+    const hostname = '0.0.0.0';
     httpServer.listen(PORT, hostname, () => {
+      console.log(`Server running at http://localhost:${PORT}/`);
       console.log('Subgraph server started on port', PORT);
       resolve();
     });

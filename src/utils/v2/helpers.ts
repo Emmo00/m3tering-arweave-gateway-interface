@@ -13,7 +13,7 @@ export function buildMeterDataPoint(transactionIDToEdgeDataMap: {
     node: {
       transactionId,
       meterNumber: edgeData.tags['M3ter-ID'] || null,
-      timestamp: edgeData.tags['Timestamp'] || null,
+      timestamp: parseInt(edgeData.tags['Timestamp']) || null,
       payload: {
         nonce: edgeData.tags['Nonce'] || null,
         voltage: edgeData.tags['Voltage'] || null,

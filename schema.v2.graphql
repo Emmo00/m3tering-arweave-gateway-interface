@@ -16,7 +16,7 @@ type MeterDataPointPayload {
 type MeterDataPoint {
   transactionId: ID!
   meterNumber: Int!
-  timestamp: Int
+  timestamp: Float
   payload: MeterDataPointPayload
 }
 
