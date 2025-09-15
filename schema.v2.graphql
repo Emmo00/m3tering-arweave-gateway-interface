@@ -40,5 +40,6 @@ type Query {
     first: Int
     after: String
     sortBy: MeterDataPointOrderBy
+    nonces: [Int!]
   ): [MeterDataPointEdge!]!
 }

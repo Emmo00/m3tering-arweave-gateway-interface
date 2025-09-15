@@ -5,6 +5,7 @@ export function buildArweaveTransactionQuery({
   first,
   after,
   sortBy,
+  nonces,
 }: BuildArweaveTransactionQueryConfigV2): string {
   return `{
         transactions(
@@ -15,14 +16,24 @@ export function buildArweaveTransactionQuery({
                 { name: "Contract-Use", values: ["M3tering Protocol Test"] },
                 { name: "Content-Type", values: ["text/plain"] },
             ${
-              !meterNumber && meterNumber !== 0
+              meterNumber || (!meterNumber && meterNumber === 0)
                 ? `
                 {
                     name: "M3ter-ID"
                     values: ["${meterNumber}"]
-                }
+                },
                     `
                 : ''
+            }
+            ${
+              !nonces || nonces.length === 0
+                ? ''
+                : `
+                {
+                    name: "Nonce"
+                    values: [${nonces.map((n) => `"${n}"`).join(', ')}]
+                },
+                    `
             }
             ]
         ) {

@@ -88,6 +88,7 @@ export interface MeterDataPointsResolverArgsV2 {
   first?: number;
   after?: string;
   sortBy?: string;
+  nonces?: number[];
 }
 
 export interface BuildArweaveTransactionQueryConfig {
@@ -102,6 +103,7 @@ export interface BuildArweaveTransactionQueryConfigV2 {
   after?: string;
   first?: number;
   sortBy?: string;
+  nonces?: number[];
 }
 
 export interface ArweaveTransactionEdge {
