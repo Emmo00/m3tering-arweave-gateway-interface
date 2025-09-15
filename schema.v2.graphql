@@ -8,7 +8,7 @@ type MeterDataPointPayload {
   voltage: Float
   energy: Float
   longitude: Float
-  latitiude: Float
+  latitude: Float
   signature: String
   publicKey: String
 }
