@@ -36,12 +36,9 @@ export async function startServer() {
   // configure versioned endpoints
   app.use(cors());
   app.use(logger('dev'));
-  app.use('/graphql', express.json(), expressMiddleware(serverV1)); // maintain V1 as default for "/graphql"
-  app.use('/v1/graphql', express.json(), expressMiddleware(serverV1));
   app.use('/v1', express.json(), expressMiddleware(serverV1));
-  app.use('/v2/graphql', express.json(), expressMiddleware(serverV2));
   app.use('/v2', express.json(), expressMiddleware(serverV2));
-  app.use('/', express.json(), expressMiddleware(serverV1)); // maintain V1 as default for "/"
+  app.use('/', express.json(), expressMiddleware(serverV2)); // maintain V2 as default for "/"
 
   return await new Promise<void>((resolve) => {
     const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 4000;
