@@ -20,7 +20,7 @@ export async function meterDataPointResolver(
   // get transactions based on query
   const transactionsFromQuery = await getTransactionsFromQuery({
     meterNumber,
-    first: first ?? 10,
+    first: first ?? nonces?.length ?? 10,
     after,
     sortBy,
     nonces,
