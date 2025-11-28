@@ -6,6 +6,7 @@ export function buildArweaveTransactionQuery({
   after,
   sortBy,
   nonces,
+  block,
 }: BuildArweaveTransactionQueryConfigV2): string {
   return `{
         transactions(
@@ -36,6 +37,11 @@ export function buildArweaveTransactionQuery({
                     `
             }
             ]
+            ${
+              block && (block.min !== undefined || block.max !== undefined)
+                ? `block: { ${block.min !== undefined ? `min: ${block.min}` : ''} ${block.max !== undefined ? `\n max: ${block.max}` : ''} }`
+                : ''
+            }
         ) {
             edges {
                 cursor

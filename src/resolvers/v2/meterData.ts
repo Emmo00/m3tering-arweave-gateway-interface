@@ -1,6 +1,7 @@
 import {
   ArweaveTransactionEdge,
   ArweaveTransactionsResponseBody,
+  BuildArweaveTransactionQueryConfigV2,
   MeterDataPointEdgeV2,
   MeterDataPointsResolverArgsV2,
 } from '../../types';
@@ -13,7 +14,7 @@ export async function meterDataPointResolver(
   args: MeterDataPointsResolverArgsV2,
 ): Promise<MeterDataPointEdgeV2[]> {
   console.log('Starting meterDataPointResolver with args:', args);
-  const { first, after, sortBy, nonces } = args;
+  const { first, after, sortBy, nonces, block } = args;
   let { meterNumber } = args;
   let meterDataPoints: MeterDataPointEdgeV2[] = [];
 
@@ -24,6 +25,7 @@ export async function meterDataPointResolver(
     after,
     sortBy,
     nonces,
+    block,
   });
 
   // transaction id => edge data mapping
@@ -49,7 +51,14 @@ export async function meterDataPointResolver(
   return meterDataPoints;
 }
 
-async function getTransactionsFromQuery({ meterNumber, first, after, sortBy, nonces }) {
+async function getTransactionsFromQuery({
+  meterNumber,
+  first,
+  after,
+  sortBy,
+  nonces,
+  block,
+}: BuildArweaveTransactionQueryConfigV2): Promise<ArweaveTransactionEdge[]> {
   let transactions: ArweaveTransactionEdge[] = [];
   const max_response_count = 100;
 
@@ -63,6 +72,7 @@ async function getTransactionsFromQuery({ meterNumber, first, after, sortBy, non
       after,
       sortBy,
       nonces,
+      block,
     });
 
     const response = await makeRequestToArweave<ArweaveTransactionsResponseBody>(query);

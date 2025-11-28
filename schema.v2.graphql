@@ -30,6 +30,14 @@ enum MeterDataPointOrderBy {
   HEIGHT_DESC
 }
 
+input BlockFilter {
+  # Minimum block height to filter from
+  min: Int
+
+  # Maximum block height to filter to
+  max: Int
+}
+
 type Query {
   version: String
   meters: [Meter!]!
@@ -41,5 +49,6 @@ type Query {
     after: String
     sortBy: MeterDataPointOrderBy
     nonces: [Int!]
+    block: BlockFilter
   ): [MeterDataPointEdge!]!
 }
