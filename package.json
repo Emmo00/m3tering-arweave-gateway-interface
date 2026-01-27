@@ -5,6 +5,7 @@
   "scripts": {
     "compile": "tsc",
     "start": "npm run compile && node dist/index.js",
+    "bun:start": "bun run src/index.ts",
     "dev": "nodemon --watch src --watch . --ext ts,graphql --watch .env",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
