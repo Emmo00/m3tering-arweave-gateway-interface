@@ -48,6 +48,7 @@ export async function makeRequestToArweave<T>(query: string): Promise<T> {
     if (cached) return cached;
   }
   try {
+    console.log(`Making request to Arweave with query: ${query}`);
     const response = await makeRequestToArweaveNetwork('/graphql', {
       method: 'POST',
       headers: {
@@ -86,7 +87,7 @@ export async function makeRequestToArweaveNetwork(
   return enqueue(async () => {
     const url = arweaveConfig.getGatewayUrl() + path;
 
-    process.stdout.write(`Making request to Arweave: ${url} with attempt ${attempt + 1}\r`);
+    console.log(`Making request to Arweave: ${url} with attempt ${attempt + 1}`);
 
     try {
       const response = await fetch(url, {
@@ -97,18 +98,11 @@ export async function makeRequestToArweaveNetwork(
         },
       });
 
-      if (
-        response.status === 429 ||
-        response.status === 503 ||
-        response.status === 529 ||
-        response.status === 572
-      ) {
-        process.stdout.write(
-          `Request to ${url} failed with status ${response.status}. retrying...\r`,
-        );
+      if (response.status >= 400 && response.status < 599) {
+        console.log(`Request to ${url} failed with status ${response.status}. retrying...`);
         // wait 10ms and try again
         if (attempt < maxAttempts) {
-          await new Promise((resolve) => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 2 ** (attempt + 1) * 100)); // Exponential backoff
           return await makeRequestToArweaveNetwork(path, config, attempt + 1, maxAttempts);
         }
         throw new Error(`Max attempts reached for ${url}`);
@@ -123,9 +117,8 @@ export async function makeRequestToArweaveNetwork(
 
       if (isTimeout) {
         console.error(`Timeout when accessing ${url}. retrying...`);
-        // wait 10ms and try again
         if (attempt < maxAttempts) {
-          await new Promise((resolve) => setTimeout(resolve, 2 * attempt)); // Exponential backoff
+          await new Promise((resolve) => setTimeout(resolve, 2 ** (attempt + 1) * 100)); // Exponential backoff
           return await makeRequestToArweaveNetwork(path, config, attempt + 1, maxAttempts);
         }
       }
