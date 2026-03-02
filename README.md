@@ -34,12 +34,7 @@ Before setting up the project, ensure you have the following installed:
    cp .env.example .env
    ```
 
-   Update the `.env` file with your Arweave Gateway URL and MongoDB URI:
-
-   ```env
-   ARWEAVE_GATEWAY_URL=<your-arweave-gateway-url>
-   MONGODB_URI=<your-mongodb-uri>
-   ```
+   Update the `.env` file with your Arweave Gateway URL and MongoDB URI and other variables.
 
 4. **Compile the TypeScript Code**:
    Compile the TypeScript code into JavaScript:
@@ -65,31 +60,16 @@ Before setting up the project, ensure you have the following installed:
    Once the application is running, you can access the GraphQL interface at:
 
    ```browser
-   http://localhost:4001/graphql
+   http://localhost:5000/graphql
    ```
-
-## Project Structure
-
-- **`src/`**: Contains the source code, including utilities and constants.
-- **`.env`**: Environment variables for configuration.
-- **`package.json`**: Project metadata and scripts.
 
 ## Key Environment Variables
 
 - `ARWEAVE_GATEWAY_URL`: The URL of the Arweave gateway to interact with.
 - `MONGODB_URI`: The connection string for your MongoDB instance.
-
-## Scripts
-
-- `npm run compile`: Compiles the TypeScript code.
-- `npm start`: Starts the application.
-- `npm run dev`: Starts the application in development mode with hot-reloading.
-
-## Dependencies
-
-- `@apollo/server`: For setting up the GraphQL server.
-- `mongoose`: For interacting with MongoDB.
-- `warp-contracts`: For interacting with Arweave contracts.
+- `GNOSIS_MAINNET_RPC`
+- `ETH_MAINNET_RPC`
+- `PORT`
 
 ## License
 
