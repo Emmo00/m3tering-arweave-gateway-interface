@@ -8,7 +8,7 @@ export const PROTOCOL_CONTRACT_ABI = [
   'function tokenByContract(string) view returns (uint256)',
 ];
 
-export const M3TER_NFT_CONTRACT_ADDRESS = '0x40a36C0eF29A49D1B1c1fA45fab63762f8FC423F';
+export const M3TER_NFT_CONTRACT_ADDRESS = 'heads.m3ter.eth';
 export const M3TER_NFT_CONTRACT_ABI = [
   'function totalSupply() view returns (uint256)',
   'function publicKey(uint256) view returns (bytes32)',
