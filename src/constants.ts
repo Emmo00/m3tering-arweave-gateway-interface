@@ -14,7 +14,7 @@ export const M3TER_NFT_CONTRACT_ABI = [
   'function publicKey(uint256) view returns (bytes32)',
 ];
 
-export const ROLLUP_CONTRACT_ADDRESS = '0x6E31632D6A7Af8d30766AA9E216c49F5AAb846c2';
+export const ROLLUP_CONTRACT_ADDRESS = 'rollup.m3ter.eth';
 export const ROLLUP_CONTRACT_ABI = [
   'function nonce(uint256) external view returns (bytes6)',
   'function account(uint256) external view returns (bytes6)',
