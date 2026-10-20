@@ -40,20 +40,6 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-            whoami
-
-            echo "Node:"
-            which node
-            node -v
-
-            echo "NPM:"
-            which npm
-            npm -v
-
-            echo "PM2:"
-            which pm2
-            pm2 -v
-
             cd /var/www/m3tering-arweave-gateway-interface
 
             git pull
